@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "backend-for-all"
 version = "0.1.0"
-description = "Backend for All (BFA) - An open-source, language-independent backend platform"
+description = "Backend for All (BFA) - Open-source, language-independent, and system-independent backend platform"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "To be determined" }

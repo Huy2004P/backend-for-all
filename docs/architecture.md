@@ -1,84 +1,91 @@
 # Conceptual Architecture — Backend for All (BFA)
 
-## 1. Overview
+## 1. Overview & Dual-Axis Architecture
 
-Backend for All is structured around a multi-layered, decoupled architecture that isolates core specifications from language-specific runtime implementations and transport mechanisms.
-
-```text
-                         BACKEND FOR ALL
-                                │
-              ┌─────────────────┴─────────────────┐
-              │                                   │
-        BFA Studio                              BFA CLI
-              │                                   │
-              └─────────────────┬─────────────────┘
-                                │
-                         BFA Specification
-                                │
-              ┌─────────────────┴─────────────────┐
-              │                                   │
-         BFA Protocol                       BFA Runtime
-              │                                   │
-       ┌──────┼──────┬────────┐
-       │      │      │        │
-    Python    Go    Java     Rust
-       │      │      │        │
-       └──────┴──────┼────────┘
-                      │
-                 BFA Services
-                      │
-          ┌───────────┼───────────┐
-          │           │           │
-       Database     Storage    Messaging
-```
-
-## 2. Core Architectural Layers
-
-### A. Specification Layer
-The foundational specification defines the language-independent primitives:
-- **Service Model**: Definitions of service boundaries, capabilities, and dependencies.
-- **Method & Function Model**: Typed RPC interfaces, streaming semantics, and execution metadata.
-- **Universal Schema**: Type definitions, validations, and data models.
-- **Error Model**: Universal error taxonomy, code mappings, and error propagation semantics.
-
-### B. Protocol & Transport Layer
-The communication backbone of BFA:
-- **BFA Protocol**: Standardized message framing, envelope structures, and serialization contracts.
-- **Transport Abstraction**: Pluggable transport backends including HTTP (REST / HTTP/2), gRPC, WebSockets, and IPC.
-
-### C. Runtime & Orchestration Layer
-The coordination engine operating within each service or as a local coordinator:
-- **Service Lifecycle**: State transitions (`initializing`, `starting`, `ready`, `stopping`, `terminated`).
-- **Registry & Discovery**: Local and distributed catalog of available services and methods.
-- **Message Dispatcher**: Routing incoming requests and events to registered handler methods.
-- **Context & Observability**: Correlation IDs, tracing context propagation, health checks, and structured telemetry.
-
-### D. Language SDK Layer
-Language-native bindings that adhere strictly to the BFA Specification:
-- Provides idiomatic APIs for each programming language (starting with Python).
-- Handles protocol serialization, transport bindings, and runtime integration transparently.
-
-### E. Plugin & Extension Layer
-Pluggable adapters for external infrastructure:
-- Storage and Databases.
-- Pub/Sub and Message Queues.
-- Authentication and Authorization providers.
-- Monitoring and Tracing collectors.
-
-### F. Tooling Layer (CLI & Studio)
-- **BFA CLI**: Command-line developer workflow (`bfa init`, `bfa dev`, `bfa run`, `bfa test`).
-- **BFA Studio**: Visual dashboard for inspecting topology, testing methods, monitoring health, and visualizing traces.
-
-## 3. Polyglot Service Interaction Model
-
-Services communicate transparently regardless of the underlying language:
+Backend for All is architected around two core axes: **All Languages** (Polyglot) and **All Systems** (Universal Domain Capabilities).
 
 ```text
-[ Python Service (AI) ] ──(BFA Request Envelope)──► [ BFA Protocol ]
-                                                            │
-                                                     (Transport Layer)
-                                                            │
-[ Go Service (Orders) ] ◄──(BFA Request Envelope)───┴───────┘
+                    BACKEND FOR ALL
+                           │
+             ┌─────────────┴─────────────┐
+             │                           │
+        ALL LANGUAGES               ALL SYSTEMS
+             │                           │
+      ┌──────┼──────┐          ┌────────┼────────┐
+      │      │      │          │        │        │
+   Python   Go    Java       Shop     SaaS     AI
+      │      │      │          │        │        │
+    Rust    C++   TypeScript  Social  Game     IoT
+      │      │      │          │        │        │
+      └──────┼──────┘          └────────┼────────┘
+             │                           │
+             └─────────────┬─────────────┘
+                           │
+                    BFA FOUNDATION
+                           │
+       ┌───────────────────┼───────────────────┐
+       │                   │                   │
+   Specification        Protocol            Runtime
+       │                   │                   │
+       └───────────────────┼───────────────────┘
+                           │
+                    BFA Building Blocks
 ```
 
-Each service interacts solely with its local BFA SDK, which encodes/decodes envelopes over the configured transport, leaving application code clean, typed, and idiomatic.
+---
+
+## 2. The Architectural Stack
+
+The BFA architecture is composed of distinct, decoupled layers:
+
+### Layer 1: BFA Foundation
+- **BFA Specification**: Formal, language-agnostic standards for defining services, methods, schemas, error taxonomies, and event semantics.
+- **BFA Protocol**: Universal binary and text wire protocol defining request/response envelopes, streaming frames, metadata headers, and distributed tracing contexts.
+- **BFA Runtime**: The coordination engine managing service registration, discovery, health checking, state transitions, and transport dispatching.
+
+### Layer 2: BFA Building Blocks (The Backend LEGO)
+The universal primitives provided to all language SDKs:
+- **Service**: Logical boundary and deployable unit.
+- **Method / Function**: Strongly typed RPC procedure or streaming endpoint.
+- **Schema**: Universal data contracts and validation rules.
+- **Request / Response**: Uniform envelopes with tracing, tenancy, and payload semantics.
+- **Event / Messaging**: Pub/sub topic definitions and message dispatching.
+- **Storage Abstraction**: Universal interfaces for key-value, document, and relational persistence.
+- **Auth & Security**: Uniform context carrying identity, roles, and permissions.
+- **Configuration**: Layered settings, environment overrides, and secrets management.
+- **Observability**: Distributed tracing, metrics emission, and structured logging.
+
+### Layer 3: Language SDK Layer
+Language-native reference bindings implementing the BFA Specification:
+- `bfa-python` *(Initial reference & validator)*
+- `bfa-go`
+- `bfa-typescript`
+- `bfa-rust`
+- `bfa-java`
+- `bfa-csharp`
+- `bfa-cpp`
+- `bfa-kotlin`
+
+### Layer 4: Pluggable Transport & Plugin Layer
+- **Transport Adapters**: HTTP/REST, gRPC, WebSockets, IPC/UDS, Message Queues.
+- **Plugin Ecosystem**: Connectors for PostgreSQL, Kafka, Redis, S3, OIDC, OpenTelemetry, etc.
+
+### Layer 5: Developer Tooling Layer
+- **BFA CLI (`bfa`)**: Developer workflow automation (`init`, `dev`, `run`, `test`, `build`, `generate`).
+- **BFA Studio**: Code-first visual developer interface for topology visualization, RPC testing, and live inspection.
+
+---
+
+## 3. Polyglot & Multi-Domain Interaction Model
+
+Services in different languages collaborate effortlessly across diverse application domains:
+
+```text
+[ Go Service: Payment ] ──(BFA Request Envelope)──► [ BFA Protocol ]
+                                                           │
+                                                   (Transport Layer)
+                                                           │
+[ Java Service: Orders ] ◄──(BFA Request Envelope)─────────┼──────────► [ Python Service: AI ]
+```
+
+Each service only needs to implement its local BFA SDK bindings. The underlying BFA Protocol and Runtime manage serialization, transport delivery, tracing propagation, and error translation transparently.

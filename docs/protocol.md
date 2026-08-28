@@ -7,13 +7,14 @@
 
 ## 1. Objectives
 
-The BFA Protocol is the wire and messaging specification enabling polyglot backend services to communicate reliably and efficiently.
+The BFA Protocol is the universal wire and messaging specification enabling polyglot backend services to communicate reliably, efficiently, and expressively across **any programming language** and for **any type of backend system**.
 
 Key objectives:
-- **Language Agnostic**: Cleanly implementable in Python, Go, Rust, Java, TypeScript, C++, C#, etc.
+- **Language Agnostic**: Cleanly implementable in Python, Go, Rust, Java, TypeScript, C++, C#, Kotlin, and future languages.
+- **System Agnostic**: Capable of serving transactional RPC (E-Commerce, SaaS), high-frequency streaming (IoT, Games), asynchronous pub/sub events (Social, Enterprise), and batch/pipeline workflows (AI).
 - **Transport Agnostic**: Capable of operating over HTTP/1.1, HTTP/2, gRPC, WebSocket, Unix Domain Sockets, or Message Queues.
 - **Low Overhead & High Performance**: Structured envelope design with efficient binary and text serialization support.
-- **Rich Semantics**: Native support for synchronous RPC, bidirectional streaming, asynchronous pub/sub events, and contextual metadata propagation.
+- **Rich Semantics**: Native support for unary RPC, bidirectional streaming, pub/sub events, and contextual metadata propagation.
 
 ---
 
@@ -22,7 +23,7 @@ Key objectives:
 The BFA Protocol revolves around the following primary abstractions:
 
 ### Service
-A logical namespace and unit of deployment containing one or more related methods and event handlers.
+A logical namespace and deployable boundary grouping related methods and event handlers.
 
 ### Function / Method
 A specific callable procedure exposed by a service, defined with explicit input/output schema contracts and invocation semantics (unary, client-streaming, server-streaming, bidirectional).
@@ -42,13 +43,13 @@ A format-agnostic schema description for validating payloads, defining field typ
 A one-way, asynchronous message emitted by a service to notify other services about domain occurrences without expecting a direct response.
 
 ### Error Taxonomy
-A standardized error format ensuring exceptions in one language (e.g., Python `ValueError`) map accurately to common error codes (e.g., `INVALID_ARGUMENT`, `NOT_FOUND`, `UNAUTHENTICATED`, `INTERNAL`) understandable by caller services in Go, Rust, etc.
+A standardized error format ensuring exceptions in one language (e.g., Python `ValueError`, Go `error`, Java `Exception`) map accurately to universal error codes (e.g., `INVALID_ARGUMENT`, `NOT_FOUND`, `UNAUTHENTICATED`, `INTERNAL`, `UNAVAILABLE`) understood across all caller services.
 
 ### Metadata & Context
-Key-value headers propagated across inter-service calls, carrying distributed tracing spans (trace ID, span ID), request deadlines, and tenant contexts.
+Key-value headers propagated across inter-service calls, carrying distributed tracing spans (trace ID, span ID), request deadlines, tenant IDs, and routing tags.
 
 ### Authentication & Authorization
-Security context framing that carries identity, claims, and tokens across service boundaries in a uniform format.
+Security context framing carrying identity, claims, and tokens across service boundaries in a uniform format.
 
 ---
 
