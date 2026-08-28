@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "BFA Documentation Language Registry",
+  "description": "Registry of natural languages supported in the Backend for All documentation ecosystem.",
+  "canonical_language": "en",
+  "version": "0.1.0",
+  "languages": [
+    {
+      "code": "en",
+      "name": "English",
+      "native_name": "English",
+      "status": "canonical",
+      "completeness_percent": 100,
+      "source_language": null,
+      "docs_path": "docs/en",
+      "maintainers": ["core-team"],
+      "last_synchronized_version": "0.1.0"
+    },
+    {
+      "code": "vi",
+      "name": "Vietnamese",
+      "native_name": "Tiếng Việt",
+      "status": "available",
+      "completeness_percent": 100,
+      "source_language": "en",
+      "docs_path": "docs/vi",
+      "maintainers": ["core-team", "community-vi"],
+      "last_synchronized_version": "0.1.0"
+    },
+    {
+      "code": "ja",
+      "name": "Japanese",
+      "native_name": "日本語",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/ja",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "ko",
+      "name": "Korean",
+      "native_name": "한국어",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/ko",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "zh",
+      "name": "Chinese (Simplified)",
+      "native_name": "简体中文",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/zh",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "es",
+      "name": "Spanish",
+      "native_name": "Español",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/es",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "fr",
+      "name": "French",
+      "native_name": "Français",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/fr",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "de",
+      "name": "German",
+      "native_name": "Deutsch",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/de",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "pt",
+      "name": "Portuguese",
+      "native_name": "Português",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/pt",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "hi",
+      "name": "Hindi",
+      "native_name": "हिन्दी",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/hi",
+      "maintainers": [],
+      "last_synchronized_version": null
+    },
+    {
+      "code": "ar",
+      "name": "Arabic",
+      "native_name": "العربية",
+      "status": "planned",
+      "completeness_percent": 0,
+      "source_language": "en",
+      "docs_path": "docs/ar",
+      "maintainers": [],
+      "last_synchronized_version": null
+    }
+  ]
+}

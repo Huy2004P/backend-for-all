@@ -45,6 +45,9 @@ A one-way, asynchronous message emitted by a service to notify other services ab
 ### Error Taxonomy
 A standardized error format ensuring exceptions in one language (e.g., Python `ValueError`, Go `error`, Java `Exception`) map accurately to universal error codes (e.g., `INVALID_ARGUMENT`, `NOT_FOUND`, `UNAUTHENTICATED`, `INTERNAL`, `UNAVAILABLE`) understood across all caller services.
 
+> [!IMPORTANT]
+> **Machine-readable error codes must be language-independent and globally immutable** (e.g., `BFA_SERVICE_NOT_FOUND`). Localized human-readable descriptions may vary by language, but the machine error code remains identical.
+
 ### Metadata & Context
 Key-value headers propagated across inter-service calls, carrying distributed tracing spans (trace ID, span ID), request deadlines, tenant IDs, and routing tags.
 

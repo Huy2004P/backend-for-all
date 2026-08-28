@@ -1,28 +1,24 @@
 # Conceptual Architecture — Backend for All (BFA)
 
-## 1. Overview & Dual-Axis Architecture
+## 1. Overview & Three-Dimensional Architecture
 
-Backend for All is architected around two core axes: **All Languages** (Polyglot) and **All Systems** (Universal Domain Capabilities).
+Backend for All is architected around three core axes: **All Languages** (Polyglot), **All Systems** (Universal Domain Capabilities), and **All Developers** (Global Multilingual Accessibility).
 
 ```text
-                    BACKEND FOR ALL
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-        ALL LANGUAGES               ALL SYSTEMS
-             │                           │
-      ┌──────┼──────┐          ┌────────┼────────┐
-      │      │      │          │        │        │
-   Python   Go    Java       Shop     SaaS     AI
-      │      │      │          │        │        │
-    Rust    C++   TypeScript  Social  Game     IoT
-      │      │      │          │        │        │
-      └──────┼──────┘          └────────┼────────┘
-             │                           │
-             └─────────────┬─────────────┘
-                           │
-                    BFA FOUNDATION
-                           │
+                         BACKEND FOR ALL
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+     ALL LANGUAGES         ALL SYSTEMS         ALL DEVELOPERS
+          │                     │                     │
+    Python / Go / Java      E-Commerce / SaaS     Global Community
+    Rust / C++ / TS         AI / Social / Game    Multilingual Docs
+    C# / Kotlin / ...       IoT / Enterprise      Accessibility
+          │                     │                     │
+          └─────────────────────┼─────────────────────┘
+                                │
+                       BFA FOUNDATION
+                                │
        ┌───────────────────┼───────────────────┐
        │                   │                   │
    Specification        Protocol            Runtime
@@ -70,9 +66,10 @@ Language-native reference bindings implementing the BFA Specification:
 - **Transport Adapters**: HTTP/REST, gRPC, WebSockets, IPC/UDS, Message Queues.
 - **Plugin Ecosystem**: Connectors for PostgreSQL, Kafka, Redis, S3, OIDC, OpenTelemetry, etc.
 
-### Layer 5: Developer Tooling Layer
-- **BFA CLI (`bfa`)**: Developer workflow automation (`init`, `dev`, `run`, `test`, `build`, `generate`).
+### Layer 5: Developer Tooling & Accessibility Layer
+- **BFA CLI (`bfa`)**: Developer workflow automation (`init`, `dev`, `run`, `test`, `build`, `generate`) with localized human-readable messages.
 - **BFA Studio**: Code-first visual developer interface for topology visualization, RPC testing, and live inspection.
+- **Multilingual Documentation & Knowledge Base**: Canonical specifications with synchronized localized documentation across global languages.
 
 ---
 

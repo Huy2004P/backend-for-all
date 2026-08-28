@@ -1,37 +1,40 @@
 # Backend for All
 
-**Backend for All (BFA)** is an open-source, language-independent, and system-independent backend platform designed to provide a universal foundation, specification, and building blocks where backend services written in any programming language can seamlessly coexist, communicate, and power any type of system.
+**Backend for All (BFA)** is an open-source, language-independent, system-independent, and developer-accessible backend platform designed to provide a universal foundation, specification, and building blocks where backend services written in any programming language can seamlessly coexist, communicate, and power any type of system—accessible to developers worldwide.
 
-> **Backend for All = Backend for Every Language and Every Type of System.**
+> **Backend for All = Backend for All Languages, All Systems, and All Developers.**
+
+---
+
+## 🌐 Documentation Languages / Chọn Ngôn Ngữ
+
+[English (Canonical)](docs/en/vision.md) | [Tiếng Việt (Bản dịch chính thức)](docs/vi/vision.md) | [Documentation Hub](docs/README.md)
 
 ---
 
 ## Vision
 
-The name **Backend for All** carries two fundamental pillars:
+The name **Backend for All** carries three fundamental pillars:
 
 1. **ALL LANGUAGES**: A language-independent architecture where services written in Python, Go, Java, Rust, TypeScript, C++, C#, Kotlin, and future languages operate as a unified system without friction.
 2. **ALL SYSTEMS**: A general-purpose, extensible platform providing universal backend building blocks capable of powering any domain—from E-Commerce and SaaS to AI platforms, Games, Social Networks, IoT, Education, and Enterprise systems.
+3. **ALL DEVELOPERS**: A global, multilingual developer ecosystem eliminating language barriers with canonical specifications and synchronized native-language documentation.
 
 ```text
-                    BACKEND FOR ALL
-                           │
-             ┌─────────────┴─────────────┐
-             │                           │
-        ALL LANGUAGES               ALL SYSTEMS
-             │                           │
-      ┌──────┼──────┐          ┌────────┼────────┐
-      │      │      │          │        │        │
-   Python   Go    Java       Shop     SaaS     AI
-      │      │      │          │        │        │
-    Rust    C++   TypeScript  Social  Game     IoT
-      │      │      │          │        │        │
-      └──────┼──────┘          └────────┼────────┘
-             │                           │
-             └─────────────┬─────────────┘
-                           │
-                    BFA FOUNDATION
-                           │
+                         BACKEND FOR ALL
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │                     │                     │
+     ALL LANGUAGES         ALL SYSTEMS         ALL DEVELOPERS
+          │                     │                     │
+    Python / Go / Java      E-Commerce / SaaS     Global Community
+    Rust / C++ / TS         AI / Social / Game    Multilingual Docs
+    C# / Kotlin / ...       IoT / Enterprise      Accessibility
+          │                     │                     │
+          └─────────────────────┼─────────────────────┘
+                                │
+                       BFA FOUNDATION
+                                │
        ┌───────────────────┼───────────────────┐
        │                   │                   │
    Specification        Protocol            Runtime
@@ -47,7 +50,7 @@ The name **Backend for All** carries two fundamental pillars:
 
 1. **Language Silos**: Modern stacks leverage different languages for distinct strengths (Python for AI, Go for microservices, Rust for speed, TypeScript for BFF/APIs). Yet uniting them requires fragile glue code, duplicated data transfer objects (DTOs), and custom communication bridges.
 2. **System-Specific Reinvention**: Developers building different application domains (E-Commerce, SaaS, Social, IoT, Games) constantly reinvent identical foundational backend concerns: discovery, RPC contracts, schema validation, event routing, lifecycle state machines, and authentication envelopes.
-3. **Inconsistent Lifecycle & Operational Tooling**: Each language ecosystem implements its own registry, health checking, graceful shutdown, configuration parsing, and telemetry differently.
+3. **Language Barriers for Global Developers**: High-quality backend architecture knowledge, documentation, and error diagnostics are predominantly English-only, hindering talented developers worldwide from adopting and contributing to modern distributed patterns.
 4. **Lack of Universal Contracts**: REST/JSON endpoints lack unified cross-language type contracts, causing runtime serialization errors and breaking cross-team collaboration.
 
 ---
@@ -59,6 +62,7 @@ BFA establishes a **Universal Common Foundation**:
 - **Universal Protocol**: High-efficiency wire messaging for RPC, streaming, and pub/sub events.
 - **Universal Building Blocks**: Standardized abstractions (Services, Schemas, Requests, Events, Storage, Auth, Observability) that assemble like LEGO pieces into any backend system.
 - **Runtime Coordinator**: A lightweight runtime managing discovery, lifecycle, health, and transport across all services.
+- **Global Documentation Ecosystem**: Single source of truth with synchronized multilingual documentation, preserving immutable machine identifiers.
 
 ---
 
@@ -67,6 +71,7 @@ BFA establishes a **Universal Common Foundation**:
 * **An Open-Source Backend Platform**: A unified foundation for modern backend engineering.
 * **Language-Independent (Polyglot)**: Built from the ground up to support any programming language.
 * **System-Independent (General-Purpose)**: Designed to power any domain or architectural style (monoliths, microservices, event-driven, serverless).
+* **Developer-Accessible (Multilingual)**: Global documentation and developer experience without language barriers.
 * **A Common Layer & Specification**: Standardizing contracts, types, and wire protocols across language boundaries.
 * **A Universal Wire Protocol**: Structured RPC, streaming, and event delivery across heterogeneous nodes.
 * **A Backend LEGO Set**: Providing universal building blocks to assemble custom backend solutions rapidly.
@@ -90,18 +95,20 @@ BFA establishes a **Universal Common Foundation**:
 1. **Open by Default**: Fully open-source, vendor-neutral, and community-owned.
 2. **Language Independent**: No single programming language is privileged. Services in Python, Go, Rust, Java, and TypeScript coexist as equals.
 3. **System Independent**: One backend platform capable of powering any vertical or architecture.
-4. **Code-First**: Hand-written, idiomatic code is the single source of truth.
-5. **GUI-Assisted**: Visual tooling assists development and observability without locking code into proprietary formats.
-6. **Interoperable**: Frictionless cross-language communication and universal schema compatibility.
-7. **Extensible**: Open plugin ecosystem for databases, message brokers, authentication, and storage.
-8. **Developer-First**: Ergonomic APIs, comprehensive documentation, and standard-library-first implementations.
-9. **Community-Driven**: Specifications and protocols evolve transparently through open RFCs and discussions.
-10. **Specification-First**: Formal specifications precede implementation, ensuring consistency across all language SDKs.
+4. **Developer Accessible (Global Multilingual)**: Documentation, guides, and developer workflows accessible across natural languages.
+5. **Code-First**: Hand-written, idiomatic code is the single source of truth.
+6. **GUI-Assisted**: Visual tooling assists development and observability without locking code into proprietary formats.
+7. **Interoperable**: Frictionless cross-language communication and universal schema compatibility.
+8. **Extensible**: Open plugin architecture for databases, message brokers, authentication, and storage.
+9. **Developer-First**: Ergonomic APIs, comprehensive documentation, and standard-library-first implementations.
+10. **Community-Driven**: Specifications, protocols, and translations evolve transparently through open RFCs and discussions.
+11. **Specification-First**: Formal specifications precede implementation, ensuring consistency across all language SDKs.
 
 > [!NOTE]
-> **Language Independent $\neq$ System Independent**  
+> **Language Independent $\neq$ System Independent $\neq$ Developer Accessible**  
 > - **Language Independent**: A single backend system can be constructed using multiple programming languages seamlessly.  
-> - **System Independent**: The exact same BFA platform, protocol, and runtime can be used to construct entirely different types of applications (E-Commerce, SaaS, Social, AI, Game, IoT, Enterprise).
+> - **System Independent**: The exact same BFA platform, protocol, and runtime can be used to construct entirely different types of applications (E-Commerce, SaaS, Social, AI, Game, IoT, Enterprise).  
+> - **Developer Accessible**: Developers worldwide can learn, adopt, and contribute to BFA in their native languages.
 
 ---
 
@@ -161,8 +168,6 @@ TypeScript
           BFA Runtime
 ```
 
-Every service interacts with its idiomatic BFA SDK, adhering to universal contracts over shared transports.
-
 ---
 
 ## All Systems — General-Purpose Foundation
@@ -182,10 +187,33 @@ BFA does not hardcode domain-specific entities (like "Cart" or "Student"); inste
 
 ---
 
+## Documentation Languages & Status
+
+BFA documentation follows a **Single Source of Truth** model rooted in canonical English specifications with community-maintained translations:
+
+| Language | Native Name | Status | Documentation Path |
+| :--- | :--- | :--- | :--- |
+| **English** | English | 🟢 Canonical (100%) | [docs/en/vision.md](docs/en/vision.md) |
+| **Vietnamese** | Tiếng Việt | 🟢 Available (100%) | [docs/vi/vision.md](docs/vi/vision.md) |
+| **Japanese** | 日本語 | 🟡 Planned | *Community requested* |
+| **Korean** | 한국어 | 🟡 Planned | *Community requested* |
+| **Chinese** | 简体中文 | 🟡 Planned | *Community requested* |
+| **Spanish** | Español | 🟡 Planned | *Community requested* |
+| **French** | Français | 🟡 Planned | *Community requested* |
+| **German** | Deutsch | 🟡 Planned | *Community requested* |
+| **Portuguese** | Português | 🟡 Planned | *Community requested* |
+| **Hindi** | हिन्दी | 🟡 Planned | *Community requested* |
+| **Arabic** | العربية | 🟡 Planned | *Community requested* |
+
+For full language registry metadata and contributing instructions, see [docs/README.md](docs/README.md) and [docs/languages.json](docs/languages.json).
+
+---
+
 ## Universal Schema & Protocol
 
 * **Universal Schema**: Formally specifies data contracts, field validations, and type mappings across languages.
 * **BFA Protocol**: Defines structured envelopes carrying message IDs, target service/method names, typed payloads, error taxonomies, tracing spans, and security contexts across transports (HTTP, gRPC, IPC, WebSocket).
+* **Immutable Machine Error Codes**: Error codes (`BFA_SERVICE_NOT_FOUND`) remain constant across all languages, while human-readable diagnostic messages are localized.
 
 ---
 
@@ -256,8 +284,6 @@ Core:
 └── BFA SDK
 ```
 
-**MVP Goal**: Prove that services written in different programming languages can operate as a unified, coherent backend system across multiple domain workloads.
-
 ---
 
 ## Project Structure
@@ -271,10 +297,21 @@ backend-for-all/
 ├── .gitignore
 │
 ├── docs/
-│   ├── vision.md
-│   ├── architecture.md
-│   ├── protocol.md
-│   └── contributing.md
+│   ├── README.md
+│   ├── languages.json
+│   ├── en/
+│   │   ├── vision.md
+│   │   ├── architecture.md
+│   │   ├── protocol.md
+│   │   ├── contributing.md
+│   │   └── internationalization.md
+│   │
+│   └── vi/
+│       ├── vision.md
+│       ├── architecture.md
+│       ├── protocol.md
+│       ├── contributing.md
+│       └── internationalization.md
 │
 ├── bfa/
 │   │
@@ -345,7 +382,7 @@ backend-for-all/
 
 ## Roadmap
 
-* **Phase 1: Project Foundation** *(Current)* — Repository skeleton, specification docs, package setup.
+* **Phase 1: Project Foundation** *(Current)* — Repository skeleton, specification docs, package setup, multilingual docs hub.
 * **Phase 2: Core Concepts** — Service, Method, Request, Response, Error abstractions.
 * **Phase 3: Universal Schema** — Universal schema definition and validation rules.
 * **Phase 4: Service Registry** — In-memory and distributed service registration.
@@ -363,7 +400,7 @@ backend-for-all/
 
 ## Contributing
 
-We welcome contributions across all language ecosystems and domain expertise. Please read [docs/contributing.md](docs/contributing.md) for details on our specification-first RFC process and pull request workflow.
+We welcome contributions across all language ecosystems, domain specialties, and translation efforts. Please read [English Contributing Guide](docs/en/contributing.md) or [Hướng Dẫn Đóng Góp Tiếng Việt](docs/vi/contributing.md) for details on our specification-first RFC process and pull request workflow.
 
 ---
 
