@@ -380,21 +380,117 @@ backend-for-all/
 
 ---
 
+## ⚡ Quick Start (Khởi Động Nhanh)
+
+### 1. Run BFA Runtime & Studio Console
+```bash
+python main.py
+```
+
+### 2. Access Web Studio & Documentation
+- **BFA Studio Management Console:** `http://127.0.0.1:8080`
+- **Interactive Documentation & Tutorials:** `http://127.0.0.1:8080/tutorial`
+
+### 3. Universal Technical Contracts & API Exports
+- **Universal Invocation Endpoint:** `POST http://127.0.0.1:8080/api/bfa/call`
+- **Universal Contract Spec (JSON):** `GET http://127.0.0.1:8080/api/bfa/contract`
+- **OpenAPI 3.0 Specification:** `GET http://127.0.0.1:8080/api/bfa/openapi.json`
+- **Android Retrofit Contract:** `GET http://127.0.0.1:8080/api/bfa/android-contract`
+- **Postman Collection v2.1:** `GET http://127.0.0.1:8080/api/bfa/postman.json`
+
+---
+
+## 🌌 Universal Single Contract (Hợp Đồng Nhất Thể Duy Nhất)
+
+Backend for All provides a **single, universal invocation gateway** for all client platforms (Android, iOS, Flutter, React, Vue, Next.js, Python, Java, C#, PHP):
+
+```text
+               ┌────────────────────────────────────────────────────────┐
+               │         POST http://127.0.0.1:8080/api/bfa/call        │
+               └──────────────────────────┬─────────────────────────────┘
+                                          │
+                  ┌───────────────────────┼───────────────────────┐
+                  ▼                       ▼                       ▼
+           [ Single CRUD ]        [ One-Shot Snapshot ]     [ Batch Aggregate ]
+        service: "users"           action: "snapshot"        action: "batch"
+        action: "find_all"         payload: {                payload: {
+        payload: { limit: 10 }       tables: ["users",         queries: {
+                                       "products", "orders"]     me: { ... },
+                                   }                             catalog: { ... }
+                                                             }
+```
+
+---
+
+## 📜 Development Logs (DEV_LOGS)
+
+### 🚀 Milestone 7: Universal Single Contract & One-Shot Composite Data (BFF)
+- **Universal Invocation Gateway:** Implemented `POST /api/bfa/call` and `GET /api/bfa/contract` as a single, universal entry point for all frontend and mobile languages.
+- **One-Shot Composite Snapshot:** Added `POST /api/bfa/snapshot` allowing client applications to fetch all required tables across an entire screen in 1 single HTTP request.
+- **Multi-Query Batch Aggregate:** Added `POST /api/bfa/batch` executing multiple distinct service methods within memory in a single round-trip.
+- **Unified SDK Generators:** Updated Studio code generators to produce single-contract implementations for Android (Kotlin/Retrofit), Flutter (Dart), React/JS, and Python.
+
+### 📱 Milestone 6: Android Native Contracts & OpenAPI 3.0 Integration
+- **OpenAPI 3.0 Document Generation:** Created dynamic `GET /api/bfa/openapi.json` generator reflecting runtime active services and custom endpoints.
+- **Android Technical Contract:** Implemented `GET /api/bfa/android-contract` with `AndroidManifest.xml` permissions, `10.0.2.2` emulator base URL, and Retrofit 2 method signatures.
+- **Postman Collection v2.1 Export:** Added `GET /api/bfa/postman.json` for one-click API testing across mobile devices.
+- **Android Kotlin SDK:** Added complete Retrofit 2 + Coroutines + Gson Singleton client templates to Studio Tab 3.
+
+### 🔍 Milestone 5: System Feature Details Inspector & Modular Table Selection
+- **Feature Inspector Modal:** Built `#system-details-modal` providing search, live counts, schema breakdown, and quick action to add custom APIs per table.
+- **Modular Table Cherry-Picking:** Enabled developers to activate individual standalone tables without running a full pre-configured blueprint (`POST /api/bfa/cherry-pick`).
+- **Dynamic Custom API Creator:** Enabled instant addition of custom endpoints (`POST /api/bfa/add-custom-api`) and deletion (`POST /api/bfa/remove-api`).
+
+### 🎨 Milestone 4: Studio Web Dashboard & Live Flow Topology Visualization
+- **Interactive Dashboard:** Built `bfa/web/index.html` with dark theme, responsive layout, SVG icons, and zero-emoji design.
+- **Live Architecture Topology:** Created dynamic SVG canvas rendering real-time interconnected nodes between Client, HTTP Transport, BFA Runtime, Active Services, and Storage Engine.
+- **Flow Statistics API:** Added `GET /api/bfa/flow-stats` returning live active services count, storage mode, and uptime.
+- **Integrated API Tester:** Added instant RPC testing panel with JSON payload editor, response visualizer, and millisecond latency tracking.
+
+### 💾 Milestone 3: Storage Factory & SQLite Persistence
+- **Storage Abstraction Layer:** Created `bfa/storage/base.py`, `memory.py`, and `sqlite.py` supporting ACID transactions and query filtering.
+- **Automated Database Table Discovery:** Added SQLite inspection and auto-generation of BFA services from pre-existing database tables.
+- **Dynamic CRUD Bridge:** Created `generate_services_for_tables` producing 6 standardized CRUD actions (`find_all`, `find_by_id`, `insert`, `update`, `delete`, `query`) per table.
+
+### 🏛️ Milestone 2: 100+ Enterprise Domain Blueprint Catalog
+- **Catalog Registry:** Built `bfa/catalog/registry.py` containing 100+ enterprise architecture presets across 10 industry categories:
+  - *E-Commerce & Retail (10 blueprints)*
+  - *Logistics, Delivery & Transport (10 blueprints)*
+  - *Social, Community & Media (10 blueprints)*
+  - *Fintech, Banking & Payment (10 blueprints)*
+  - *Healthcare & Medical (10 blueprints)*
+  - *Education, EdTech & LMS (10 blueprints)*
+  - *Hospitality, Travel & F&B (10 blueprints)*
+  - *Real Estate & Smart City (10 blueprints)*
+  - *Enterprise, ERP & HR (10 blueprints)*
+  - *AI, Web3 & High-Tech (10 blueprints)*
+- **Catalog Loader:** Implemented `mount_blueprint_to_runtime` for one-click runtime switching and database schema initialization.
+
+### 🏗️ Milestone 1: Core Foundation & Polyglot Runtime Orchestrator
+- **Core Abstractions:** Created `Service`, `Method`, `Schema`, `Request`, `Response`, `Error`.
+- **In-Memory Runtime:** Built `Runtime` orchestrator managing request dispatching and lifecycle states.
+- **Protocol Encoders/Decoders:** Implemented standard JSON wire protocol codec.
+- **HTTP Transport Adapter:** Built `HTTPTransport` on top of Python's standard library `http.server` with zero external runtime dependencies.
+- **Automated Test Suite:** Created 26 integration and unit tests passing in <1s.
+
+---
+
 ## Roadmap
 
-* **Phase 1: Project Foundation** *(Current)* — Repository skeleton, specification docs, package setup, multilingual docs hub.
-* **Phase 2: Core Concepts** — Service, Method, Request, Response, Error abstractions.
-* **Phase 3: Universal Schema** — Universal schema definition and validation rules.
-* **Phase 4: Service Registry** — In-memory and distributed service registration.
-* **Phase 5: Runtime** — Lifecycle management, coordination, and dispatching.
-* **Phase 6: Protocol** — Wire format, encoders, decoders, and envelope design.
-* **Phase 7: Transport** — HTTP and gRPC transport adapters.
-* **Phase 8: CLI** — Development tools (`bfa init`, `bfa run`, `bfa dev`).
-* **Phase 9: Python ↔ Python Interoperability** — Multi-service reference validation.
-* **Phase 10: Python ↔ Go Interoperability** — Cross-language communication bridge.
-* **Phase 11: Python ↔ TypeScript Interoperability** — Web/Node.js service integration.
-* **Phase 12: Plugin System** — Database, messaging, and auth extensions.
-* **Phase 13: BFA Studio** — Visual development and monitoring interface.
+* **Phase 1: Project Foundation** *(Completed)* — Repository skeleton, specification docs, package setup, multilingual docs hub.
+* **Phase 2: Core Concepts** *(Completed)* — Service, Method, Request, Response, Error abstractions.
+* **Phase 3: Universal Schema** *(Completed)* — Universal schema definition and validation rules.
+* **Phase 4: Service Registry** *(Completed)* — In-memory and distributed service registration.
+* **Phase 5: Runtime** *(Completed)* — Lifecycle management, coordination, and dispatching.
+* **Phase 6: Protocol** *(Completed)* — Wire format, encoders, decoders, and envelope design.
+* **Phase 7: Transport** *(Completed)* — HTTP transport adapter and universal invocation gateway.
+* **Phase 8: 100+ Domain Blueprints** *(Completed)* — Catalog across 10 industry domains.
+* **Phase 9: Storage Engine & CRUD** *(Completed)* — SQLite persistence and schema auto-discovery.
+* **Phase 10: BFA Studio Web Console** *(Completed)* — Topology visualization, tester, and code generators.
+* **Phase 11: Polyglot SDKs & Contracts** *(Completed)* — Android Kotlin, Flutter, React, OpenAPI 3.0.
+* **Phase 12: Python ↔ Go Interoperability** *(In Progress)* — Cross-language binary communication bridge.
+* **Phase 13: Python ↔ TypeScript Interoperability** *(Planned)* — Web/Node.js service integration.
+* **Phase 14: Distributed Plugin System** *(Planned)* — Message brokers (Kafka, NATS) and OAuth2/JWT auth.
 
 ---
 
@@ -407,3 +503,4 @@ We welcome contributions across all language ecosystems, domain specialties, and
 ## License
 
 License terms are currently to be determined. See [LICENSE](LICENSE) for details.
+
