@@ -68,3 +68,8 @@ venv.bak/
 # Operating System Files
 .DS_Store
 Thumbs.db
+
+# Databases & Runtime State
+*.db
+*.sqlite
+*.sqlite3

@@ -1,0 +1,21 @@
+{
+  "server": {
+    "host": "127.0.0.1",
+    "port": 8080
+  },
+  "blueprint": "idle",
+  "domain": "ecommerce",
+  "database": {
+    "driver": "sqlite",
+    "sqlite_path": "bfa_database.db",
+    "host": "localhost",
+    "port": 5432,
+    "database_name": "bfa_ecommerce",
+    "username": "postgres",
+    "password": ""
+  },
+  "tables": [
+    "users",
+    "wallets"
+  ]
+}

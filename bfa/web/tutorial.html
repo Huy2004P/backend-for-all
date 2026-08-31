@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tài Liệu & Hướng Dẫn Sử Dụng — Backend for All (BFA)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-sidebar: #0d1322;
+      --bg-card: rgba(18, 26, 43, 0.75);
+      --bg-card-hover: rgba(28, 40, 65, 0.9);
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(56, 189, 248, 0.3);
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --accent: #38bdf8;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+      --rose: #f43f5e;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      background-image: 
+        radial-gradient(circle at 15% 10%, rgba(59, 130, 246, 0.08) 0%, transparent 40%),
+        radial-gradient(circle at 85% 90%, rgba(16, 185, 129, 0.06) 0%, transparent 40%);
+    }
+
+    .icon-svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Header Trên Cùng */
+    header {
+      background: rgba(13, 19, 34, 0.9);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .brand-logo {
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, #38bdf8, #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+    }
+
+    .docs-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-back-studio {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.35);
+      color: #93c5fd;
+      padding: 0.45rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .btn-back-studio:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Bố Cục Trang Tài Liệu */
+    .docs-layout {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* Thanh Menu Bên Trái (Sticky Sidebar) */
+    .docs-sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border-color);
+      padding: 1.75rem 1.25rem;
+      position: sticky;
+      top: 61px;
+      height: calc(100vh - 61px);
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      margin-bottom: 0.5rem;
+    }
+
+    .sidebar-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sidebar-link {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      padding: 0.45rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-main);
+    }
+
+    .sidebar-link.active {
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent);
+      font-weight: 600;
+      border-left: 3px solid var(--accent);
+    }
+
+    /* Khung Nội Dung Bài Viết */
+    .docs-content {
+      padding: 2.5rem 3.5rem 5rem 3.5rem;
+      max-width: 980px;
+      line-height: 1.75;
+      color: #cbd5e1;
+    }
+
+    .docs-content h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.5px;
+    }
+
+    .docs-content .lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      line-height: 1.6;
+    }
+
+    .docs-section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: 80px;
+    }
+
+    .docs-section h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .docs-section h3 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 1.5rem 0 0.75rem 0;
+    }
+
+    .docs-section p {
+      margin-bottom: 1rem;
+    }
+
+    .docs-section ul, .docs-section ol {
+      margin-left: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .docs-section li {
+      margin-bottom: 0.4rem;
+    }
+
+    .code-block-wrap {
+      position: relative;
+      margin: 1rem 0 1.5rem 0;
+    }
+
+    .code-block {
+      background: #060911;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      line-height: 1.6;
+      color: #93c5fd;
+      overflow-x: auto;
+    }
+
+    .btn-copy-code {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .btn-copy-code:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .callout-box {
+      background: rgba(56, 189, 248, 0.08);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      margin: 1.25rem 0;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+    }
+
+    .callout-box.tip {
+      background: rgba(16, 185, 129, 0.08);
+      border-left-color: var(--emerald);
+    }
+
+    .callout-box.warning {
+      background: rgba(245, 158, 11, 0.08);
+      border-left-color: var(--amber);
+    }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.25rem 0;
+      font-size: 0.85rem;
+    }
+
+    .table-custom th, .table-custom td {
+      border: 1px solid var(--border-color);
+      padding: 0.75rem 1rem;
+      text-align: left;
+    }
+
+    .table-custom th {
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .table-custom tr:nth-child(even) {
+      background: rgba(255, 255, 255, 0.02);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Trên Cùng -->
+  <header>
+    <div class="brand-wrap">
+      <a href="/" class="brand-logo">
+        <svg class="icon-svg" style="width:22px;height:22px;color:var(--accent);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+        BFA Docs
+      </a>
+      <span class="docs-badge">Hướng Dẫn Lập Trình</span>
+    </div>
+
+    <div class="header-actions">
+      <a href="/" class="btn-back-studio">
+        <svg class="icon-svg" style="width:14px;height:14px;" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Mở BFA Studio
+      </a>
+    </div>
+  </header>
+
+  <!-- Bố Cục Trang Tài Liệu -->
+  <div class="docs-layout">
+
+    <!-- Menu Bên Trái -->
+    <aside class="docs-sidebar">
+      <div>
+        <div class="sidebar-section-title">1. Khởi Động Nhanh</div>
+        <div class="sidebar-links">
+          <a href="#tong-quan" class="sidebar-link active">1.1 Tổng quan về BFA</a>
+          <a href="#kien-truc-lego" class="sidebar-link">1.2 Mô hình kiến trúc LEGO</a>
+          <a href="#cai-dat" class="sidebar-link">1.3 Cài đặt & Khởi chạy</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">2. 100 Bản Thiết Kế</div>
+        <div class="sidebar-links">
+          <a href="#danh-muc-100" class="sidebar-link">2.1 Danh mục 10 khối ngành</a>
+          <a href="#khoi-chay-1-click" class="sidebar-link">2.2 Kích hoạt 1-Click</a>
+          <a href="#du-lieu-thuc-te" class="sidebar-link">2.3 Cơ chế nạp dữ liệu mẫu</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">3. Cơ Sở Dữ Liệu</div>
+        <div class="sidebar-links">
+          <a href="#ket-noi-3-buoc" class="sidebar-link">3.1 Quy trình kết nối 3 bước</a>
+          <a href="#ho-tro-10-db" class="sidebar-link">3.2 Hỗ trợ 10 loại CSDL</a>
+          <a href="#quet-bang-tu-dong" class="sidebar-link">3.3 Tự động quét bảng</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">4. Kiểm Thử API</div>
+        <div class="sidebar-links">
+          <a href="#crud-chuan-hoa" class="sidebar-link">4.1 6 Thao tác chuẩn hóa</a>
+          <a href="#test-truc-tiep" class="sidebar-link">4.2 Kiểm thử trực tiếp</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">5. Tích Hợp Client</div>
+        <div class="sidebar-links">
+          <a href="#client-javascript" class="sidebar-link">5.1 React & JavaScript</a>
+          <a href="#client-flutter" class="sidebar-link">5.2 Flutter & Dart</a>
+          <a href="#client-python" class="sidebar-link">5.3 Python & Backend</a>
+          <a href="#client-curl" class="sidebar-link">5.4 cURL & Postman</a>
+        </div>
+      </div>
+
+      <div>
+        <div class="sidebar-section-title">6. Cộng Đồng</div>
+        <div class="sidebar-links">
+          <a href="#dong-gop" class="sidebar-link">6.1 Đóng góp kiến trúc mới</a>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Khung Nội Dung Bài Hướng Dẫn -->
+    <main class="docs-content">
+
+      <h1>Tài Liệu Hướng Dẫn Sử Dụng Backend for All</h1>
+      <p class="lead">Hướng dẫn chi tiết từ căn bản đến nâng cao cách xây dựng, vận hành và kết nối ứng dụng Frontend vào cổng dịch vụ backend tự động BFA.</p>
+
+      <!-- PHẦN 1 -->
+      <section id="tong-quan" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          1.1 Tổng quan về Backend for All (BFA)
+        </h2>
+        <p><strong>Backend for All (BFA)</strong> là nền tảng API gateway và động cơ sinh dịch vụ backend tự động. Mục tiêu cốt lõi của BFA là giúp lập trình viên Frontend, Mobile và Fullstack có ngay một hệ thống Backend hoàn chỉnh mà không cần tốn hàng tuần viết lại các mã nguồn CRUD lặp đi lặp lại.</p>
+
+        <div class="callout-box">
+          <strong>Triết lý không sở hữu cơ sở dữ liệu:</strong> BFA không ép buộc người dùng phải sử dụng một loại cơ sở dữ liệu nhất định. Bạn có thể cắm BFA vào bất kỳ hệ quản trị CSDL nào (PostgreSQL, MySQL, SQLite, MongoDB, SQL Server...) và BFA sẽ tự động phát sinh toàn bộ API tương ứng.
+        </div>
+      </section>
+
+      <section id="kien-truc-lego" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+          1.2 Mô hình kiến trúc LEGO độc lập
+        </h2>
+        <p>BFA được xây dựng theo các tầng module phân tách rành mạch:</p>
+
+        <div class="code-block-wrap">
+          <pre class="code-block">[Ứng Dụng Client (React, Vue, Flutter, iOS, Android, Python)]
+                         │ (HTTP POST /api/<bảng>/<thao_tác>)
+                         ▼
+                [HTTP Transport :8080]
+                         │ (Giải mã JSON Payload)
+                         ▼
+                   [BFA Runtime]
+                         │ (Định tuyến Service & Kiểm tra Schema)
+                         ▼
+            [Tự Động Sinh CRUD & Nghiệp Vụ]
+                         │ (Giao tiếp qua BaseStorage)
+                         ▼
+       [Cơ Sở Dữ Liệu Thật (Postgres / MySQL / SQLite / Mongo)]</pre>
+        </div>
+      </section>
+
+      <section id="cai-dat" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          1.3 Cài đặt & Khởi chạy trong 1 phút
+        </h2>
+        <p>Chỉ cần chạy lệnh sau trong thư mục dự án:</p>
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">python main.py</pre>
+        </div>
+        <p>Máy chủ sẽ tự động mở trình duyệt web và điều hướng tới bảng điều khiển BFA Studio tại địa chỉ <code>http://127.0.0.1:8080</code>.</p>
+      </section>
+
+      <!-- PHẦN 2 -->
+      <section id="danh-muc-100" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          2.1 Danh mục 100 Bản Thiết Kế Kiến Trúc
+        </h2>
+        <p>BFA cung cấp sẵn 100 bản thiết kế kiến trúc chuẩn hóa thuộc 10 ngành nghề chính:</p>
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Khối Ngành</th>
+              <th>Số Lượng</th>
+              <th>Ví Dụ Hệ Thống Tiêu Biểu</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Thương Mại Điện Tử</strong></td>
+              <td>10 hệ thống</td>
+              <td>Cửa hàng B2C, Sàn đa người bán, Đấu giá trực tuyến, Đặt hàng định kỳ...</td>
+            </tr>
+            <tr>
+              <td><strong>2. Tài Chính & Ngân Hàng</strong></td>
+              <td>10 hệ thống</td>
+              <td>Ví điện tử cá nhân, Cho vay P2P, Sổ cái tài sản số, Cổng thanh toán...</td>
+            </tr>
+            <tr>
+              <td><strong>3. Mạng Xã Hội & Cộng Đồng</strong></td>
+              <td>10 hệ thống</td>
+              <td>Tiểu blog ngắn, Diễn đàn hỏi đáp, Ứng dụng hẹn hò, Kênh phát trực tiếp...</td>
+            </tr>
+            <tr>
+              <td><strong>4. Giáo Dục Trực Tuyến</strong></td>
+              <td>10 hệ thống</td>
+              <td>Khóa học theo nhu cầu, Nền tảng gia sư 1-1, Thi trắc nghiệm, Chấm bài tự động...</td>
+            </tr>
+            <tr>
+              <td><strong>5. Du Lịch & Khách Sạn</strong></td>
+              <td>10 hệ thống</td>
+              <td>Đặt phòng khách sạn, Vé máy bay, Chia sẻ căn hộ homestay, Thuê xe du lịch...</td>
+            </tr>
+            <tr>
+              <td><strong>6. Y Tế & Chăm Sóc Sức Khỏe</strong></td>
+              <td>10 hệ thống</td>
+              <td>Đặt lịch khám bệnh, Hồ sơ bệnh án điện tử, Tư vấn sức khỏe từ xa, Nhà thuốc...</td>
+            </tr>
+            <tr>
+              <td><strong>7. Vận Tải & Kho Vận</strong></td>
+              <td>10 hệ thống</td>
+              <td>Gọi xe công nghệ, Giao hàng thu hộ COD, Quản lý kho WMS, Bãi đỗ xe thông minh...</td>
+            </tr>
+            <tr>
+              <td><strong>8. Phần Mềm Doanh Nghiệp</strong></td>
+              <td>10 hệ thống</td>
+              <td>Quản lý quan hệ khách hàng CRM, Bảng công việc Kanban, Chấm công tính lương...</td>
+            </tr>
+            <tr>
+              <td><strong>9. Giải Trí & Truyền Thông</strong></td>
+              <td>10 hệ thống</td>
+              <td>Phát phim trực tuyến, Nền tảng nghe nhạc số, Đặt vé xem phim, Quản lý sự kiện...</td>
+            </tr>
+            <tr>
+              <td><strong>10. Nhà Thông Minh & IoT</strong></td>
+              <td>10 hệ thống</td>
+              <td>Điều khiển thiết bị nhà, Trạm quan trắc môi trường, Giám sát hành trình GPS...</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section id="khoi-chay-1-click" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+          2.2 Kích hoạt bản thiết kế 1-Click
+        </h2>
+        <p>Tại tab <strong>100 Kiến Trúc Mẫu</strong> trên BFA Studio:</p>
+        <ol>
+          <li>Nhập từ khóa cần tìm (Ví dụ: <em>gọi xe</em>, <em>tiền điện tử</em>, <em>khách sạn</em>).</li>
+          <li>Bấm nút <strong>Khởi Chạy Hệ Thống</strong> trên thẻ kiến trúc tương ứng.</li>
+          <li>Toàn bộ cấu trúc bảng, các ràng buộc và dữ liệu mẫu thực tế sẽ được cấp phát ngay lập tức vào cơ sở dữ liệu.</li>
+        </ol>
+      </section>
+
+      <!-- PHẦN 3 -->
+      <section id="ket-noi-3-buoc" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+          3.1 Quy trình kết nối Cơ Sở Dữ Liệu 3 Bước
+        </h2>
+        <p>BFA giải quyết hoàn toàn sự bối rối của người dùng bằng quy trình 3 bước rõ ràng:</p>
+
+        <div class="callout-box tip">
+          <strong>Bước 1: Chọn CSDL & Điền Thông Số</strong><br>
+          Chọn 1 trong 10 loại CSDL và nhập Host, Port, User, Mật khẩu $\rightarrow$ Bấm <em>Kiểm Tra Kết Nối CSDL</em>.
+        </div>
+
+        <div class="callout-box tip">
+          <strong>Bước 2: Khai Báo Bảng Dữ Liệu</strong><br>
+          Bấm nút <em>Tự Động Quét Bảng Trong CSDL</em> để BFA tự động đọc các bảng hiện có, hoặc tự nhập danh sách tên bảng (ví dụ: <code>users, products, orders</code>).
+        </div>
+
+        <div class="callout-box tip">
+          <strong>Bước 3: Kích Hoạt Sinh Toàn Bộ API</strong><br>
+          Bấm <em>Kích Hoạt Cơ Sở Dữ Liệu & Sinh Toàn Bộ API</em> $\rightarrow$ BFA lưu cấu hình, kết nối CSDL và tự động mở toàn bộ các endpoint CRUD!
+        </div>
+      </section>
+
+      <!-- PHẦN 4 -->
+      <section id="crud-chuan-hoa" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+          4.1 6 Thao tác CRUD chuẩn hóa
+        </h2>
+        <p>Với mỗi bảng dữ liệu, BFA tự động sinh 6 thao tác chuẩn hóa sẵn sàng phục vụ:</p>
+        <ul>
+          <li><code>find_all</code>: Lấy danh sách bản ghi (hỗ trợ phân trang <code>limit</code>, <code>offset</code>).</li>
+          <li><code>find_by_id</code>: Lấy thông tin chi tiết một bản ghi theo khóa chính <code>id</code>.</li>
+          <li><code>insert</code>: Thêm mới bản ghi vào cơ sở dữ liệu.</li>
+          <li><code>update</code>: Cập nhật thông tin bản ghi theo <code>id</code>.</li>
+          <li><code>delete</code>: Xóa bản ghi khỏi hệ thống.</li>
+          <li><code>query</code>: Truy vấn lọc nâng cao theo các điều kiện lọc linh hoạt.</li>
+        </ul>
+      </section>
+
+      <!-- PHẦN 5 -->
+      <section id="universal-contract" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--emerald);" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          5.0 Hợp Đồng Nhất Thể Duy Nhất (Universal Single Contract)
+        </h2>
+        <p>Để tối giản hóa tối đa, mọi ngôn ngữ (JavaScript, Android Kotlin, Flutter Dart, Python, Swift, PHP, cURL) chỉ cần gọi qua <strong>ĐÚNG 1 ĐIỂM CUỐI DUY NHẤT</strong>:</p>
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-family: 'JetBrains Mono'; font-size: 0.85rem; color: var(--emerald);">
+          POST http://127.0.0.1:8080/api/bfa/call
+        </div>
+        <p>Cấu trúc gói tin gửi lên (Request Envelope) cố định:</p>
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">{
+  "service": "users",     // Tên bảng (hoặc để trống nếu dùng snapshot)
+  "action": "find_all",   // find_all, find_by_id, insert, update, delete, query, snapshot, batch
+  "payload": { "limit": 10 }
+}</pre>
+        </div>
+      </section>
+
+      <section id="client-javascript" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+          5.1 Tích hợp JavaScript & React
+        </h2>
+        <p>Sử dụng Fetch API chuẩn để kết nối từ React, Next.js, Vue hoặc Node.js:</p>
+
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">// Lấy danh sách sản phẩm từ BFA
+const phanHoi = await fetch("http://127.0.0.1:8080/api/products/find_all", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ limit: 10 })
+});
+
+const ketQua = await phanHoi.json();
+console.log("Dữ liệu sản phẩm:", ketQua.data.records);</pre>
+        </div>
+      </section>
+
+      <section id="client-android" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          5.2 Tích hợp Android Native (Kotlin + Retrofit 2)
+        </h2>
+        <p>Để ứng dụng Android kết nối đến BFA Backend mà không gặp lỗi Network Security:</p>
+        <ol style="margin-left: 1.5rem; margin-bottom: 1rem; font-size: 0.85rem; color: var(--text-muted); line-height: 1.6;">
+          <li>Khai báo trong <code>AndroidManifest.xml</code>: <code>&lt;uses-permission android:name="android.permission.INTERNET" /&gt;</code></li>
+          <li>Thêm thuộc tính: <code>android:usesCleartextTraffic="true"</code> vào thẻ <code>&lt;application&gt;</code>.</li>
+          <li>Địa chỉ kết nối máy ảo Android Emulator: <code>http://10.0.2.2:8080/</code></li>
+        </ol>
+
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">// Retrofit Interface cho Android Kotlin
+interface BfaApiService {
+    @POST("api/products/find_all")
+    suspend fun getProducts(@Body req: Map&lt;String, Any&gt; = mapOf("limit" to 10)): Response&lt;BfaResponse&lt;RecordsData&gt;&gt;
+}
+
+object BfaApiClient {
+    private const val BASE_URL = "http://10.0.2.2:8080/"
+    val api: BfaApiService by lazy {
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(BfaApiService::class.java)
+    }
+}</pre>
+        </div>
+      </section>
+
+      <section id="client-flutter" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+          5.3 Tích hợp Flutter & Mobile App (iOS / Android)
+        </h2>
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+Future&lt;void&gt; layDanhSachSanPham() async {
+  // Chú ý: Dùng 10.0.2.2 khi chạy máy ảo Android Emulator
+  final uri = Uri.parse('http://10.0.2.2:8080/api/products/find_all');
+  final phanHoi = await http.post(
+    uri,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'limit': 10}),
+  );
+
+  if (phanHoi.statusCode == 200) {
+    final ketQua = jsonDecode(phanHoi.body);
+    print('Danh sách sản phẩm: \${ketQua["data"]["records"]}');
+  }
+}</pre>
+        </div>
+      </section>
+
+      <section id="client-python" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+          5.4 Tích hợp Python
+        </h2>
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">import requests
+
+phan_hoi = requests.post(
+    "http://127.0.0.1:8080/api/products/find_all",
+    json={"limit": 10}
+)
+ket_qua = phan_hoi.json()
+print("Kết quả:", ket_qua.get("data"))</pre>
+        </div>
+      </section>
+
+      <section id="client-curl" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          5.4 Gọi bằng cURL / Terminal
+        </h2>
+        <div class="code-block-wrap">
+          <button class="btn-copy-code" onclick="copyCode(this)">Sao Chép</button>
+          <pre class="code-block">curl -X POST http://127.0.0.1:8080/api/products/find_all \
+  -H "Content-Type: application/json" \
+  -d '{"limit": 10}'</pre>
+        </div>
+      </section>
+
+      <!-- PHẦN 6 -->
+      <section id="dong-gop" class="docs-section">
+        <h2>
+          <svg class="icon-svg" style="color:var(--accent);" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+          6.1 Hướng dẫn đóng góp cho cộng đồng
+        </h2>
+        <p>BFA là dự án mã nguồn mở hướng tới cộng đồng. Để bổ sung các bản thiết kế kiến trúc số 101, 102...:</p>
+        <ol>
+          <li>Mở file <code>bfa/catalog/registry.py</code> trong mã nguồn.</li>
+          <li>Khai báo thông số hệ thống vào từ điển <code>BLUEPRINT_CATALOG</code>.</li>
+          <li>Tạo Pull Request trên GitHub để cộng đồng cùng đánh giá và đưa vào phiên bản chính thức.</li>
+        </ol>
+      </section>
+
+    </main>
+
+  </div>
+
+  <script>
+    function copyCode(btn) {
+      const code = btn.nextElementSibling.innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        const origText = btn.innerText;
+        btn.innerText = "Đã Sao Chép!";
+        setTimeout(() => { btn.innerText = origText; }, 2000);
+      });
+    }
+
+    // Tự động highlight link sidebar khi cuộn trang
+    window.addEventListener('scroll', () => {
+      const sections = document.querySelectorAll('.docs-section');
+      const links = document.querySelectorAll('.sidebar-link');
+      let currentSectionId = "";
+
+      sections.forEach(section => {
+        const top = section.offsetTop - 100;
+        if (window.scrollY >= top) {
+          currentSectionId = section.getAttribute('id');
+        }
+      });
+
+      if (currentSectionId) {
+        links.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + currentSectionId) {
+            link.classList.add('active');
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
