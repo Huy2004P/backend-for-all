@@ -11,7 +11,6 @@ class MemoryStorage(BaseStorage):
     def __init__(self):
         self.tables = {}
         self.counters = {}
-        self._seed_default_data()
 
     def _seed_default_data(self):
         self.insert("users", {

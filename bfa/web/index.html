@@ -1349,13 +1349,13 @@
               Dịch Vụ Đang Kích Hoạt
             </div>
             <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
-              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #93c5fd;" onclick="openRelationsModal()" title="Xem sơ đồ quan hệ các bảng và khóa ngoại">
+              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #93c5fd;" onclick="openRelationsModal()" title="Xem khung cấu trúc bảng, kiểu cột và khóa ngoại">
                 <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-                Sơ Đồ Bảng
+                Khung Sơ Đồ
               </button>
-              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399;" onclick="autoSeedDatabase()" title="Tự động phân tích và nạp dữ liệu liên kết chuẩn">
+              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399;" onclick="autoSeedDatabase()" title="Nạp thử dữ liệu mẫu khi cần kiểm thử">
                 <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                Nạp Dữ Liệu
+                Nạp Thử Mẫu
               </button>
               <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #93c5fd;" onclick="openActiveSystemDetails()" title="Xem bảng tổng hợp toàn bộ chức năng & API">
                 <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
@@ -3795,14 +3795,14 @@ def goi_api_${service}_${method}():
             <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
           </div>
           <div>
-            <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff;">Sơ Đồ Liên Kết Bảng & Khóa Ngoại (Relational Schema)</h3>
-            <p style="font-size: 0.75rem; color: var(--text-muted);">Cơ sở dữ liệu tự động suy luận và kết nối các bảng theo khóa ngoại quan hệ.</p>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff;">Khung CSDL & Sơ Đồ Quan Hệ Khóa Ngoại (Clean Schema Framework)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">CSDL sạch 100% không chèn dữ liệu mẫu giả lập. Khung bảng & API đã sẵn sàng nhận dữ liệu thật.</p>
           </div>
         </div>
         <div style="display: flex; gap: 0.5rem; align-items: center;">
           <button class="btn-execute" style="background: var(--emerald); font-size: 0.75rem; padding: 0.35rem 0.75rem;" onclick="autoSeedDatabase()">
             <svg class="icon-svg" style="width:13px;height:13px;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-            Tự Động Nạp Dữ Liệu Liên Kết
+            Nạp Thử Dữ Liệu Mẫu (Tùy Chọn)
           </button>
           <button style="background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; padding: 0 0.5rem;" onclick="closeRelationsModal()">&times;</button>
         </div>

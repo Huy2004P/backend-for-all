@@ -17,15 +17,16 @@ def mount_blueprint_to_runtime(
     blueprint_key_or_id: str | int,
     storage: BaseStorage,
     runtime: Runtime | None = None,
+    seed_sample_data: bool = False,
 ) -> tuple[Runtime, dict]:
     """
     Kích hoạt một Blueprint bất kỳ trong số 100 Blueprint:
     1. Lấy thông tin Blueprint từ Registry.
-    2. Nạp dữ liệu mẫu ban đầu từ Blueprint.
-    3. Tự động phân tích và sinh dữ liệu liên kết quan hệ (Auto-Seed) cho các bảng còn trống.
-    4. Tự động sinh CRUD APIs cho tất cả các bảng.
-    5. Áp dụng tinh chỉnh nghiệp vụ Domain tương ứng.
-    6. Đăng ký tất cả Service vào Runtime.
+    2. Khởi tạo khung schema và sinh CRUD APIs cho tất cả các bảng.
+    3. Áp dụng tinh chỉnh nghiệp vụ Domain tương ứng.
+    4. Đăng ký tất cả Service vào Runtime.
+    (Không tự động chèn dữ liệu mẫu giả lập, giữ CSDL sạch sẵn sàng cho dữ liệu thật,
+     trừ khi seed_sample_data=True được yêu cầu rõ ràng).
     """
     bp = get_blueprint(blueprint_key_or_id)
     if not bp:
@@ -36,31 +37,30 @@ def mount_blueprint_to_runtime(
 
     tables = bp["tables"]
 
-    # 1. Nạp seed data nếu có trong blueprint
-    seed_data = bp.get("seed_data", {})
-    for table_name, sample_rows in seed_data.items():
-        existing_records = storage.find_all(table_name)
-        if not existing_records:
-            for row in sample_rows:
-                storage.insert(table_name, row)
+    # Chỉ nạp dữ liệu mẫu khi người dùng yêu cầu rõ ràng (seed_sample_data=True)
+    if seed_sample_data:
+        seed_data = bp.get("seed_data", {})
+        for table_name, sample_rows in seed_data.items():
+            existing_records = storage.find_all(table_name)
+            if not existing_records:
+                for row in sample_rows:
+                    storage.insert(table_name, row)
+        auto_seed_relational_database(tables, storage)
 
-    # 2. Tự động phân tích và nạp dữ liệu liên kết chuẩn cho các bảng con còn trống
-    auto_seed_relational_database(tables, storage)
-
-    # 3. Sinh CRUD APIs cho tất cả các bảng trong Blueprint
+    # Sinh khung CRUD APIs cho tất cả các bảng trong Blueprint
     services = generate_services_for_tables(tables, storage)
     services_map = {}
     for service in services:
         services_map[service.name] = service
         runtime.register_service(service)
 
-    # 3. Áp dụng Domain Tuning theo Category
+    # Áp dụng Domain Tuning theo Category
     category = bp["category"]
     apply_domain_tuning(category, services_map, storage)
 
     return runtime, bp
 
 
-def load_blueprint_by_key(blueprint_key: str, storage: BaseStorage) -> tuple[Runtime, dict]:
+def load_blueprint_by_key(blueprint_key: str, storage: BaseStorage, seed_sample_data: bool = False) -> tuple[Runtime, dict]:
     """Helper nạp nhanh blueprint theo key."""
-    return mount_blueprint_to_runtime(blueprint_key, storage)
+    return mount_blueprint_to_runtime(blueprint_key, storage, seed_sample_data=seed_sample_data)

@@ -512,7 +512,6 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                 try:
                     storage = get_storage_engine()
                     runtime.services.clear()
-                    auto_seed_relational_database(tables, storage)
                     services = generate_services_for_tables(tables, storage)
                     services_map = {}
                     for s in services:

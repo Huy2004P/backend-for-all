@@ -15,7 +15,6 @@ class SQLiteStorage(BaseStorage):
     def __init__(self, db_path: str = "bfa_database.db"):
         self.db_path = str(Path(db_path))
         self._init_tables()
-        self._seed_default_data_if_empty()
 
     def _get_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(self.db_path)
