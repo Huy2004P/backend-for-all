@@ -14,6 +14,11 @@ from urllib.parse import urlparse
 from bfa.bridge.crud import generate_services_for_tables
 from bfa.catalog.loader import mount_blueprint_to_runtime
 from bfa.catalog.registry import CATEGORIES, list_all_blueprints
+from bfa.catalog.schema_synthesizer import (
+    auto_seed_relational_database,
+    infer_system_relations,
+    synthesize_table_schema,
+)
 from bfa.config.settings import settings
 from bfa.core.method import Method
 from bfa.core.request import Request
@@ -386,7 +391,30 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                 })
                 return
 
-            # 10. Kiểm tra sức khỏe: GET /health
+            # 10. Sơ đồ liên kết CSDL & Quan hệ khóa ngoại: GET /api/bfa/schema-relations
+            if clean_path in ("/api/bfa/schema-relations", "/api/schema-relations"):
+                active_tables = list(runtime.services.keys())
+                relations = infer_system_relations(active_tables)
+                schemas = {t: synthesize_table_schema(t) for t in active_tables}
+                storage = get_storage_engine()
+                stats = {t: len(storage.find_all(t)) for t in active_tables}
+                self._send_encoded_response(200, {
+                    "status": "SUCCESS",
+                    "active_tables": active_tables,
+                    "relations": relations,
+                    "table_schemas": {
+                        t: {
+                            "columns": s["columns"],
+                            "foreign_keys": s.get("foreign_keys", {}),
+                            "record_count": stats.get(t, 0)
+                        } for t, s in schemas.items()
+                    },
+                    "total_relations": len(relations),
+                    "active_blueprint": settings.blueprint,
+                })
+                return
+
+            # 11. Kiểm tra sức khỏe: GET /health
             if clean_path == "/health":
                 self._send_encoded_response(200, {
                     "status": "SUCCESS",
@@ -484,6 +512,7 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                 try:
                     storage = get_storage_engine()
                     runtime.services.clear()
+                    auto_seed_relational_database(tables, storage)
                     services = generate_services_for_tables(tables, storage)
                     services_map = {}
                     for s in services:
@@ -507,6 +536,19 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                 except Exception as e:
                     self._send_encoded_response(500, {"status": "ERROR", "error": str(e)})
                     return
+
+            # 1c2. Tự động nạp dữ liệu mẫu liên kết quan hệ: POST /api/bfa/auto-seed
+            if clean_path in ("/api/bfa/auto-seed", "/api/auto-seed"):
+                storage = get_storage_engine()
+                active_tables = list(runtime.services.keys())
+                seeded = auto_seed_relational_database(active_tables, storage, rows_per_table=int(payload.get("rows_per_table", 3)))
+                self._send_encoded_response(200, {
+                    "status": "SUCCESS",
+                    "message": "Đã tự động phân tích cấu trúc và nạp dữ liệu liên kết chuẩn cho các bảng!",
+                    "seeded_tables": seeded,
+                    "active_services": active_tables,
+                })
+                return
 
             # 1d. Thêm API tùy chỉnh khi thấy thiếu: POST /api/bfa/add-custom-api
             if clean_path == "/api/bfa/add-custom-api":

@@ -12,6 +12,49 @@ from bfa.core.service import Service
 from bfa.storage.base import BaseStorage
 
 
+def resolve_relations(record: dict, table_name: str, storage: BaseStorage, expand_list: list[str]) -> dict:
+    """
+    Tự động giải quyết và nhúng dữ liệu liên kết khóa ngoại (Foreign Keys / Joins / Nested Relations).
+    - Hỗ trợ Many-to-One: user_id -> nhúng object "user", product_id -> nhúng "product"
+    - Hỗ trợ One-to-Many: user.id -> nhúng danh sách "orders"
+    """
+    if not record or not expand_list:
+        return record
+
+    expanded_record = record.copy()
+    expand_set = set(e.lower().strip() for e in expand_list if isinstance(e, str))
+
+    # 1. Quét quan hệ Nhiều - 1 (Many-to-One qua cột _id)
+    for key, val in list(record.items()):
+        if key.endswith("_id") and val is not None:
+            singular_name = key[:-3]  # e.g., user_id -> user
+            parent_table = singular_name + "s"  # e.g., users
+            if singular_name in expand_set or parent_table in expand_set or "*" in expand_set:
+                parent_record = storage.get(parent_table, val)
+                if not parent_record:
+                    parent_record = storage.get(singular_name, val)
+                if parent_record:
+                    expanded_record[singular_name] = parent_record
+
+    # 2. Quét quan hệ 1 - Nhiều (One-to-Many)
+    rec_id = record.get("id")
+    if rec_id is not None:
+        for expand_target in expand_set:
+            if expand_target == "*":
+                continue
+            child_fk_candidates = [
+                f"{table_name.rstrip('s')}_id",
+                f"{table_name}_id",
+            ]
+            for child_fk in child_fk_candidates:
+                child_records = storage.find(expand_target, {child_fk: rec_id})
+                if child_records:
+                    expanded_record[expand_target] = child_records
+                    break
+
+    return expanded_record
+
+
 def create_crud_service_for_table(table_name: str, storage: BaseStorage) -> Service:
     """
     Tự động sinh ra một BFA Service hoàn chỉnh với đầy đủ các API CRUD cho một bảng dữ liệu.
@@ -21,18 +64,27 @@ def create_crud_service_for_table(table_name: str, storage: BaseStorage) -> Serv
     # 1. Method: find_all
     def handle_find_all(req: Request) -> dict:
         limit = req.payload.get("limit", 100) if req.payload else 100
+        expand = req.payload.get("expand") or req.payload.get("include") if req.payload else None
+        if isinstance(expand, str):
+            expand = [x.strip() for x in expand.split(",") if x.strip()]
+
         records = storage.find_all(table_name)
+        sliced = records[:limit]
+
+        if expand:
+            sliced = [resolve_relations(r, table_name, storage, expand) for r in sliced]
+
         return {
             "table": table_name,
             "total": len(records),
-            "records": records[:limit],
+            "records": sliced,
         }
 
     service.add_method(
         Method(
             "find_all",
             handler=handle_find_all,
-            input_schema=Schema({"limit": int}) if False else None,  # Optional payload
+            input_schema=Schema({"limit": int}) if False else None,
         )
     )
 
@@ -44,6 +96,14 @@ def create_crud_service_for_table(table_name: str, storage: BaseStorage) -> Serv
         record = storage.get(table_name, record_id)
         if not record:
             raise ValueError(f"Record with ID '{record_id}' not found in table '{table_name}'.")
+
+        expand = req.payload.get("expand") or req.payload.get("include")
+        if isinstance(expand, str):
+            expand = [x.strip() for x in expand.split(",") if x.strip()]
+
+        if expand:
+            record = resolve_relations(record, table_name, storage, expand)
+
         return {"table": table_name, "record": record}
 
     service.add_method(
@@ -59,7 +119,6 @@ def create_crud_service_for_table(table_name: str, storage: BaseStorage) -> Serv
         data = req.payload.get("data", req.payload)
         if not data or not isinstance(data, dict):
             raise ValueError(f"Payload must be a dictionary of record data to insert into '{table_name}'.")
-        # Remove empty or wrapper keys if needed
         insert_data = {k: v for k, v in data.items() if k != "data"} if "data" in req.payload else data
         created_record = storage.insert(table_name, insert_data)
         return {
@@ -121,10 +180,24 @@ def create_crud_service_for_table(table_name: str, storage: BaseStorage) -> Serv
     # 6. Method: query (Filter)
     def handle_query(req: Request) -> dict:
         filters = req.payload.get("filter", req.payload)
-        results = storage.find(table_name, filters)
+        if isinstance(filters, dict):
+            # Tách expand ra khỏi filters nếu có
+            expand = filters.pop("expand", None) or filters.pop("include", None)
+            clean_filters = {k: v for k, v in filters.items() if k not in ("expand", "include", "limit")}
+        else:
+            expand = None
+            clean_filters = filters
+
+        results = storage.find(table_name, clean_filters)
+
+        if expand:
+            if isinstance(expand, str):
+                expand = [x.strip() for x in expand.split(",") if x.strip()]
+            results = [resolve_relations(r, table_name, storage, expand) for r in results]
+
         return {
             "table": table_name,
-            "filter": filters,
+            "filter": clean_filters,
             "total": len(results),
             "records": results,
         }

@@ -1348,7 +1348,15 @@
               <svg class="icon-svg" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
               Dịch Vụ Đang Kích Hoạt
             </div>
-            <div style="display: flex; gap: 0.35rem;">
+            <div style="display: flex; gap: 0.35rem; flex-wrap: wrap;">
+              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #93c5fd;" onclick="openRelationsModal()" title="Xem sơ đồ quan hệ các bảng và khóa ngoại">
+                <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                Sơ Đồ Bảng
+              </button>
+              <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399;" onclick="autoSeedDatabase()" title="Tự động phân tích và nạp dữ liệu liên kết chuẩn">
+                <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                Nạp Dữ Liệu
+              </button>
               <button class="btn-execute" style="padding: 0.3rem 0.55rem; font-size: 0.75rem; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #93c5fd;" onclick="openActiveSystemDetails()" title="Xem bảng tổng hợp toàn bộ chức năng & API">
                 <svg class="icon-svg" style="width:12px;height:12px;" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                 Chi Tiết
@@ -3640,7 +3648,171 @@ def goi_api_${service}_${method}():
       }, 200);
     }
 
+    async function openRelationsModal() {
+      const modal = document.getElementById('relations-modal');
+      const body = document.getElementById('relations-modal-body');
+      if (modal) modal.style.display = 'flex';
+      if (body) {
+        body.innerHTML = `<div style="text-align:center; padding: 2rem; color: var(--text-dim);">Đang phân tích cấu trúc và sơ đồ liên kết CSDL...</div>`;
+      }
+
+      try {
+        const res = await fetch('/api/bfa/schema-relations');
+        const data = await res.json();
+        if (data.status !== 'SUCCESS') throw new Error(data.error || 'Lỗi lấy dữ liệu');
+
+        const { active_tables, relations, table_schemas } = data;
+        let html = '';
+
+        // 1. Thẻ tổng quan
+        html += `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: rgba(18, 26, 43, 0.8); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">TỔNG SỐ BẢNG</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: var(--accent);">${active_tables.length}</div>
+            </div>
+            <div style="background: rgba(18, 26, 43, 0.8); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">QUAN HỆ KHÓA NGOẠI</div>
+              <div style="font-size: 1.6rem; font-weight: 800; color: var(--emerald);">${relations.length}</div>
+            </div>
+            <div style="background: rgba(18, 26, 43, 0.8); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem;">
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">TRẠNG THÁI LIÊN KẾT</div>
+              <div style="font-size: 1.05rem; font-weight: 800; color: #38bdf8; margin-top: 0.35rem;">Tự Động Suy Luận Quan Hệ</div>
+            </div>
+          </div>
+        `;
+
+        // 2. Danh sách các đường nối quan hệ
+        if (relations.length > 0) {
+          html += `
+            <div style="margin-bottom: 1.5rem;">
+              <div style="font-size: 0.85rem; font-weight: 800; color: var(--emerald); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem;">
+                <svg class="icon-svg" style="width:14px;height:14px;" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                Các Đường Nối Quan Hệ Khóa Ngoại Đang Hoạt Động (${relations.length})
+              </div>
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 0.75rem;">
+                ${relations.map(r => `
+                  <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 8px; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                      <span style="font-weight: 800; color: #fff; font-size: 0.85rem;">${r.from_table}</span>
+                      <span style="color: var(--emerald); font-size: 0.75rem; font-family: 'JetBrains Mono';">.${r.from_column}</span>
+                    </div>
+                    <div style="color: var(--emerald); font-weight: 800; font-size: 0.9rem;">&xrarr;</div>
+                    <div>
+                      <span style="font-weight: 800; color: var(--accent); font-size: 0.85rem;">${r.to_table}</span>
+                      <span style="color: var(--accent); font-size: 0.75rem; font-family: 'JetBrains Mono';">.id</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            </div>
+          `;
+        }
+
+        // 3. Chi tiết từng bảng và cột
+        html += `
+          <div style="font-size: 0.85rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.75rem;">
+            Cấu Trúc Cột & Số Lượng Bản Ghi Từng Bảng
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+            ${active_tables.map(t => {
+              const schema = table_schemas[t] || {};
+              const cols = schema.columns || {};
+              const fks = schema.foreign_keys || {};
+              const count = schema.record_count || 0;
+              return `
+                <div style="background: rgba(18, 26, 43, 0.9); border: 1px solid var(--border-color); border-radius: 10px; padding: 1rem;">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 0.5rem;">
+                    <div style="font-weight: 800; font-size: 0.95rem; color: #fff; display: flex; align-items: center; gap: 0.4rem;">
+                      <svg class="icon-svg" style="width:14px;height:14px;color:var(--accent);" viewBox="0 0 24 24"><ellipse cx="12" cy="5" rx="9" ry="3"></ellipse><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path></svg>
+                      ${t}
+                    </div>
+                    <span class="badge-pill ${count > 0 ? 'emerald' : 'amber'}" style="font-size: 0.7rem;">${count} dòng</span>
+                  </div>
+                  <div style="display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.75rem; font-family: 'JetBrains Mono';">
+                    ${Object.entries(cols).map(([cName, cType]) => {
+                      const isFk = fks[cName];
+                      return `
+                        <div style="display: flex; justify-content: space-between; padding: 0.2rem 0.4rem; border-radius: 4px; background: rgba(0,0,0,0.2);">
+                          <span style="color: ${isFk ? 'var(--emerald)' : (cName === 'id' ? 'var(--amber)' : 'var(--text-main)')}; font-weight: ${isFk || cName === 'id' ? '700' : '400'};">
+                            ${cName} ${isFk ? `(FK &rarr; ${isFk})` : (cName === 'id' ? '(PK)' : '')}
+                          </span>
+                          <span style="color: var(--text-dim); font-size: 0.7rem;">${cType}</span>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        `;
+
+        body.innerHTML = html;
+      } catch (err) {
+        body.innerHTML = `<div style="color: #f87171; text-align: center; padding: 2rem;">Lỗi lấy sơ đồ: ${err.message}</div>`;
+      }
+    }
+
+    function closeRelationsModal() {
+      const modal = document.getElementById('relations-modal');
+      if (modal) modal.style.display = 'none';
+    }
+
+    async function autoSeedDatabase() {
+      try {
+        const res = await fetch('/api/bfa/auto-seed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ rows_per_table: 3 })
+        });
+        const data = await res.json();
+        if (data.status === 'SUCCESS') {
+          showToast('Đã tự động phân tích cấu trúc và nạp dữ liệu liên kết chuẩn cho tất cả bảng!');
+          fetchFlowStats();
+          if (document.getElementById('relations-modal').style.display === 'flex') {
+            openRelationsModal();
+          }
+        } else {
+          showToast('Lỗi: ' + data.error, true);
+        }
+      } catch (err) {
+        showToast('Lỗi kết nối máy chủ: ' + err.message, true);
+      }
+    }
+
     window.onload = initApp;
   </script>
+
+  <!-- MODAL SƠ ĐỒ LIÊN KẾT CƠ SỞ DỮ LIỆU & QUAN HỆ KHÓA NGOẠI -->
+  <div id="relations-modal" style="display: none; position: fixed; inset: 0; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(10px); z-index: 9999; justify-content: center; align-items: center; padding: 1.5rem;">
+    <div style="background: #0d1322; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 14px; max-width: 960px; width: 100%; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 25px 60px rgba(0,0,0,0.8); overflow: hidden;">
+      
+      <!-- Header Modal -->
+      <div style="padding: 1.25rem 1.75rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(13, 19, 34, 0.95);">
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(56, 189, 248, 0.15); display: flex; align-items: center; justify-content: center; color: var(--accent);">
+            <svg class="icon-svg" style="width:20px;height:20px;" viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          </div>
+          <div>
+            <h3 style="font-size: 1.15rem; font-weight: 800; color: #fff;">Sơ Đồ Liên Kết Bảng & Khóa Ngoại (Relational Schema)</h3>
+            <p style="font-size: 0.75rem; color: var(--text-muted);">Cơ sở dữ liệu tự động suy luận và kết nối các bảng theo khóa ngoại quan hệ.</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+          <button class="btn-execute" style="background: var(--emerald); font-size: 0.75rem; padding: 0.35rem 0.75rem;" onclick="autoSeedDatabase()">
+            <svg class="icon-svg" style="width:13px;height:13px;" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+            Tự Động Nạp Dữ Liệu Liên Kết
+          </button>
+          <button style="background: none; border: none; color: var(--text-dim); font-size: 1.5rem; cursor: pointer; padding: 0 0.5rem;" onclick="closeRelationsModal()">&times;</button>
+        </div>
+      </div>
+
+      <!-- Body Modal -->
+      <div style="padding: 1.5rem 1.75rem; overflow-y: auto; flex: 1;" id="relations-modal-body">
+        <!-- Được nạp qua JS -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>

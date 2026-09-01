@@ -210,6 +210,34 @@ def test_web_studio_endpoints():
             assert uni_snap_data["status"] == "SUCCESS"
             assert "rides" in uni_snap_data["data"]
 
+        # 7j. Test GET /api/bfa/schema-relations -> Relational Schema Graph
+        with urlopen("http://127.0.0.1:8099/api/bfa/schema-relations") as resp:
+            rel_data = json.loads(resp.read().decode("utf-8"))
+            assert rel_data["status"] == "SUCCESS"
+            assert "table_schemas" in rel_data
+            assert "relations" in rel_data
+
+        # 7k. Test POST /api/bfa/auto-seed -> Auto seed relational database
+        seed_req = Request(
+            "http://127.0.0.1:8099/api/bfa/auto-seed",
+            data=json.dumps({"rows_per_table": 2}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urlopen(seed_req) as resp:
+            seed_data = json.loads(resp.read().decode("utf-8"))
+            assert seed_data["status"] == "SUCCESS"
+
+        # 7l. Test POST /api/rides/find_all with expand: ["passenger", "driver"]
+        expand_req = Request(
+            "http://127.0.0.1:8099/api/rides/find_all",
+            data=json.dumps({"expand": ["passenger", "driver"]}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urlopen(expand_req) as resp:
+            exp_data = json.loads(resp.read().decode("utf-8"))
+            assert exp_data["status"] == "SUCCESS"
+            assert len(exp_data["data"]["records"]) > 0
+
         # 8. Test POST /api/bfa/stop -> Stop/Deactivate active system
         stop_req = Request(
             "http://127.0.0.1:8099/api/bfa/stop",
