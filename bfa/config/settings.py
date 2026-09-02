@@ -15,14 +15,14 @@ DEFAULT_CONFIG = {
         "host": "127.0.0.1",
         "port": 8080,
     },
-    "blueprint": "b2c_store",  # Key trong 100 Blueprint Catalog
+    "blueprint": "b2c_store",
     "domain": "ecommerce",
     "database": {
-        "driver": "sqlite",  # "sqlite", "postgres", "mysql", "memory"
-        "sqlite_path": "bfa_database.db",
+        "driver": "json",  # "json", "memory", "postgres", "mysql", "mongodb"
+        "data_file": "data/bfa_store.json",
         "host": "localhost",
         "port": 5432,
-        "database_name": "bfa_ecommerce",
+        "database_name": "bfa_store",
         "username": "postgres",
         "password": "",
     },

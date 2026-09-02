@@ -6,11 +6,11 @@
   "blueprint": "idle",
   "domain": "ecommerce",
   "database": {
-    "driver": "sqlite",
-    "sqlite_path": "bfa_database.db",
+    "driver": "json",
+    "data_file": "data/bfa_store.json",
     "host": "localhost",
     "port": 5432,
-    "database_name": "bfa_ecommerce",
+    "database_name": "bfa_store",
     "username": "postgres",
     "password": ""
   },
