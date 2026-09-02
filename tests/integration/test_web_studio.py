@@ -238,6 +238,31 @@ def test_web_studio_endpoints():
             assert exp_data["status"] == "SUCCESS"
             assert len(exp_data["data"]["records"]) > 0
 
+        # 7m. Test GET /bfa.js -> Universal JavaScript SDK
+        with urlopen("http://127.0.0.1:8099/bfa.js") as resp:
+            js_content = resp.read().decode("utf-8")
+            assert "createBfaClient" in js_content
+            assert resp.headers.get("Content-Type").startswith("application/javascript")
+
+        # 7n. Test GET /api/bfa/network-info -> Network & LAN IP resolver
+        with urlopen("http://127.0.0.1:8099/api/bfa/network-info") as resp:
+            net_data = json.loads(resp.read().decode("utf-8"))
+            assert net_data["status"] == "SUCCESS"
+            assert "lan_ip" in net_data
+            assert "lan_url" in net_data
+            assert "android_emulator_url" in net_data
+
+        # 7o. Test POST /api/bfa/prompt-to-system -> Natural Vietnamese Prompt-to-Schema
+        prompt_req = Request(
+            "http://127.0.0.1:8099/api/bfa/prompt-to-system",
+            data=json.dumps({"prompt": "Quản lý phòng trọ gồm phòng, khách thuê, hợp đồng, hóa đơn"}).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+        )
+        with urlopen(prompt_req) as resp:
+            prompt_data = json.loads(resp.read().decode("utf-8"))
+            assert prompt_data["status"] == "SUCCESS"
+            assert "rooms" in prompt_data["blueprint"]["tables"]
+
         # 8. Test POST /api/bfa/stop -> Stop/Deactivate active system
         stop_req = Request(
             "http://127.0.0.1:8099/api/bfa/stop",

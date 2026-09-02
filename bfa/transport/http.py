@@ -6,6 +6,7 @@ BFA Runtime invocations, and serves the BFA Studio Web Dashboard and Tutorial Do
 """
 
 import json
+import socket
 import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -17,6 +18,7 @@ from bfa.catalog.registry import CATEGORIES, list_all_blueprints
 from bfa.catalog.schema_synthesizer import (
     auto_seed_relational_database,
     infer_system_relations,
+    parse_prompt_to_system_blueprint,
     synthesize_table_schema,
 )
 from bfa.config.settings import settings
@@ -31,6 +33,116 @@ from bfa.transport.base import BaseTransport
 
 WEB_INDEX_PATH = Path(__file__).parent.parent / "web" / "index.html"
 WEB_TUTORIAL_PATH = Path(__file__).parent.parent / "web" / "tutorial.html"
+
+BFA_JS_SDK = """/**
+ * Backend for All (BFA) — Lightweight Zero-Config Universal JavaScript SDK
+ * Simple 1-line connection to any BFA backend server.
+ */
+(function(root) {
+  'use strict';
+  
+  function createBfaClient(options = {}) {
+    const defaultBase = (typeof window !== 'undefined' && window.location && window.location.origin) 
+      ? window.location.origin 
+      : 'http://127.0.0.1:8080';
+      
+    const config = {
+      baseUrl: (options.baseUrl || defaultBase).replace(/\\/$/, '')
+    };
+
+    const client = {
+      baseUrl: config.baseUrl,
+
+      setBaseUrl(url) {
+        this.baseUrl = url.replace(/\\/$/, '');
+        config.baseUrl = this.baseUrl;
+      },
+
+      async call(service, action = 'find_all', payload = {}) {
+        const url = `${config.baseUrl}/api/bfa/call`;
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ service, action, payload })
+        });
+        if (!res.ok) {
+          const errText = await res.text();
+          throw new Error(`[BFA Error ${res.status}]: ${errText}`);
+        }
+        const json = await res.json();
+        if (json.status !== 'SUCCESS') {
+          throw new Error(json.error || json.message || 'Lỗi không xác định từ BFA Server');
+        }
+        return json.data;
+      },
+
+      async getAll(table, options = {}) {
+        return this.call(table, 'find_all', options);
+      },
+
+      async getById(table, id, expand = null) {
+        return this.call(table, 'find_by_id', { id, expand });
+      },
+
+      async create(table, data) {
+        return this.call(table, 'insert', { data });
+      },
+
+      async update(table, id, data) {
+        return this.call(table, 'update', { id, data });
+      },
+
+      async delete(table, id) {
+        return this.call(table, 'delete', { id });
+      },
+
+      async query(table, filter = {}, expand = null) {
+        return this.call(table, 'query', { filter, expand });
+      },
+
+      async snapshot(tables = []) {
+        return this.call('', 'snapshot', { tables });
+      },
+
+      async batch(requests = []) {
+        return this.call('', 'batch', { requests });
+      },
+
+      async getSchemas() {
+        const res = await fetch(`${config.baseUrl}/api/bfa/schema-relations`);
+        return res.json();
+      }
+    };
+
+    return client;
+  }
+
+  const defaultInstance = createBfaClient();
+
+  if (typeof module !== 'undefined' && module.exports) {
+    module.exports = defaultInstance;
+    module.exports.createBfaClient = createBfaClient;
+  } else if (typeof define === 'function' && define.amd) {
+    define([], function() { return defaultInstance; });
+  } else {
+    root.bfa = defaultInstance;
+    root.createBfaClient = createBfaClient;
+  }
+})(typeof window !== 'undefined' ? window : globalThis);
+"""
+
+
+def get_local_lan_ip() -> str:
+    """Tự động phát hiện địa chỉ IP nội bộ của máy chủ BFA trong mạng LAN Wi-Fi."""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.settimeout(0.1)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "127.0.0.1"
 
 
 def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSONDecoder):
@@ -414,7 +526,34 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                 })
                 return
 
-            # 11. Kiểm tra sức khỏe: GET /health
+            # 11. Thư viện Universal JavaScript SDK: GET /bfa.js
+            if clean_path in ("/bfa.js", "/bfa-client.js", "/sdk.js"):
+                self.send_response(200)
+                self.send_header("Content-Type", "application/javascript; charset=utf-8")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                content = BFA_JS_SDK.encode("utf-8")
+                self.send_header("Content-Length", str(len(content)))
+                self.end_headers()
+                self.wfile.write(content)
+                return
+
+            # 12. Thông tin mạng LAN & Máy ảo di động: GET /api/bfa/network-info
+            if clean_path in ("/api/bfa/network-info", "/api/network-info"):
+                lan_ip = get_local_lan_ip()
+                port = 8080
+                self._send_encoded_response(200, {
+                    "status": "SUCCESS",
+                    "lan_ip": lan_ip,
+                    "port": port,
+                    "local_url": f"http://127.0.0.1:{port}",
+                    "lan_url": f"http://{lan_ip}:{port}",
+                    "android_emulator_url": f"http://10.0.2.2:{port}",
+                    "active_blueprint": settings.blueprint,
+                    "active_services": list(runtime.services.keys()),
+                })
+                return
+
+            # 13. Kiểm tra sức khỏe: GET /health
             if clean_path == "/health":
                 self._send_encoded_response(200, {
                     "status": "SUCCESS",
@@ -495,6 +634,39 @@ def create_bfa_http_handler(runtime: Runtime, encoder: JSONEncoder, decoder: JSO
                     self._send_encoded_response(200, {
                         "status": "SUCCESS",
                         "message": f"Đã khởi tạo và kích hoạt hệ thống tùy chỉnh '{bp_record['name']}'!",
+                        "blueprint": bp_record,
+                        "active_services": list(runtime.services.keys()),
+                    })
+                    return
+                except Exception as e:
+                    self._send_encoded_response(500, {"status": "ERROR", "error": str(e)})
+                    return
+
+            # 1b2. Phân tích mô tả tiếng Việt tự nhiên & Tạo hệ thống tức thì: POST /api/bfa/prompt-to-system
+            if clean_path in ("/api/bfa/prompt-to-system", "/api/bfa/ai-prompt"):
+                prompt = payload.get("prompt", "").strip()
+                if not prompt:
+                    self._send_encoded_response(400, {
+                        "status": "ERROR",
+                        "error": "Vui lòng nhập câu mô tả ý tưởng hệ thống bạn muốn xây dựng."
+                    })
+                    return
+
+                from bfa.catalog.registry import register_custom_blueprint
+                try:
+                    bp_data = parse_prompt_to_system_blueprint(prompt)
+                    bp_record = register_custom_blueprint(bp_data)
+                    storage = get_storage_engine()
+                    runtime.services.clear()
+                    mount_blueprint_to_runtime(bp_record["key"], storage, runtime, seed_sample_data=False)
+
+                    full_cfg = settings.config.copy()
+                    full_cfg["blueprint"] = bp_record["key"]
+                    settings.save_config(full_cfg)
+
+                    self._send_encoded_response(200, {
+                        "status": "SUCCESS",
+                        "message": f"Đã phân tích và kích hoạt thành công hệ thống '{bp_record['name']}'!",
                         "blueprint": bp_record,
                         "active_services": list(runtime.services.keys()),
                     })

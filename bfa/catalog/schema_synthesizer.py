@@ -219,6 +219,62 @@ TABLE_KNOWLEDGE_BASE: dict[str, dict[str, Any]] = {
         "columns": {"id": "INTEGER PRIMARY KEY", "project_id": "INTEGER", "assignee_id": "INTEGER", "title": "TEXT", "priority": "TEXT", "status": "TEXT"},
         "foreign_keys": {"project_id": "projects", "assignee_id": "employees"},
         "defaults": lambda i: {"id": i, "project_id": 1, "assignee_id": 1, "title": f"Nhiệm vụ {i}: Xây dựng API và liên kết cơ sở dữ liệu quan hệ", "priority": "HIGH", "status": "DONE" if i == 1 else "IN_PROGRESS"}
+    },
+
+    # --- REAL ESTATE & RENTAL ---
+    "tenants": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "full_name": "TEXT", "phone": "TEXT", "id_card": "TEXT", "email": "TEXT"},
+        "foreign_keys": {},
+        "defaults": lambda i: {"id": i, "full_name": f"Khách Thuê {chr(64+i)}", "phone": f"093388990{i}", "id_card": f"07920000123{i}", "email": f"tenant{i}@example.com"}
+    },
+    "contracts": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "room_id": "INTEGER", "tenant_id": "INTEGER", "deposit_amount": "REAL", "start_date": "DATE", "end_date": "DATE", "status": "TEXT"},
+        "foreign_keys": {"room_id": "rooms", "tenant_id": "tenants"},
+        "defaults": lambda i: {"id": i, "room_id": i, "tenant_id": i, "deposit_amount": 7000000.0, "start_date": "2026-09-01", "end_date": "2027-09-01", "status": "ACTIVE"}
+    },
+    "utility_readings": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "room_id": "INTEGER", "month_year": "TEXT", "electricity_kwh": "REAL", "water_m3": "REAL"},
+        "foreign_keys": {"room_id": "rooms"},
+        "defaults": lambda i: {"id": i, "room_id": i, "month_year": "08/2026", "electricity_kwh": 120.5, "water_m3": 14.0}
+    },
+    "invoices": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "contract_id": "INTEGER", "room_id": "INTEGER", "total_amount": "REAL", "status": "TEXT", "due_date": "DATE"},
+        "foreign_keys": {"contract_id": "contracts", "room_id": "rooms"},
+        "defaults": lambda i: {"id": i, "contract_id": i, "room_id": i, "total_amount": 4200000.0, "status": "UNPAID", "due_date": "2026-09-05"}
+    },
+
+    # --- F&B, CAFE & RESTAURANTS ---
+    "menu_items": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "name": "TEXT", "category": "TEXT", "price": "REAL", "is_available": "BOOLEAN"},
+        "foreign_keys": {},
+        "defaults": lambda i: {"id": i, "name": ["Cà Phê Muối Sữa", "Trà Đào Cam Sả", "Trà Sữa Trân Châu Hoàng Gia", "Matcha Latte"][i-1] if i <= 4 else f"Món Uống #{i}", "category": "BEVERAGE", "price": [35000, 45000, 50000, 55000][i-1] if i <= 4 else 40000.0, "is_available": True}
+    },
+    "dining_tables": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "table_number": "TEXT", "capacity": "INTEGER", "status": "TEXT"},
+        "foreign_keys": {},
+        "defaults": lambda i: {"id": i, "table_number": f"Bàn {i:02d}", "capacity": 4, "status": "EMPTY"}
+    },
+    "staff": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "full_name": "TEXT", "role": "TEXT", "phone": "TEXT", "shift": "TEXT"},
+        "foreign_keys": {},
+        "defaults": lambda i: {"id": i, "full_name": f"Nhân Viên {chr(64+i)}", "role": "BARISTA" if i%2==1 else "CASHIER", "phone": f"090912345{i}", "shift": "MORNING"}
+    },
+
+    # --- CINEMA & TICKETING ---
+    "movies": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "title": "TEXT", "genre": "TEXT", "duration_minutes": "INTEGER", "rating": "REAL"},
+        "foreign_keys": {},
+        "defaults": lambda i: {"id": i, "title": f"Siêu Phẩm Điện Ảnh #{i}", "genre": "ACTION", "duration_minutes": 120, "rating": 9.2}
+    },
+    "showtimes": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "movie_id": "INTEGER", "start_time": "DATETIME", "hall": "TEXT", "ticket_price": "REAL"},
+        "foreign_keys": {"movie_id": "movies"},
+        "defaults": lambda i: {"id": i, "movie_id": 1, "start_time": "2026-09-02 19:30:00", "hall": f"Rạp {i}", "ticket_price": 95000.0}
+    },
+    "tickets": {
+        "columns": {"id": "INTEGER PRIMARY KEY", "showtime_id": "INTEGER", "user_id": "INTEGER", "seat_number": "TEXT", "price": "REAL", "status": "TEXT"},
+        "foreign_keys": {"showtime_id": "showtimes", "user_id": "users"},
+        "defaults": lambda i: {"id": i, "showtime_id": 1, "user_id": 1, "seat_number": f"F{i+5}", "price": 95000.0, "status": "PAID"}
     }
 }
 
@@ -245,13 +301,15 @@ def synthesize_table_schema(table_name: str) -> dict[str, Any]:
     }
     inferred_fks = {}
 
-    # Nếu tên bảng có dạng số nhiều hoặc liên quan
-    if "order" in t_clean or "item" in t_clean or "cart" in t_clean:
+    if "order" in t_clean or "item" in t_clean or "cart" in t_clean or "bill" in t_clean:
         inferred_cols["user_id"] = "INTEGER"
         inferred_fks["user_id"] = "users"
     if "item" in t_clean:
         inferred_cols["product_id"] = "INTEGER"
         inferred_fks["product_id"] = "products"
+    if "room" in t_clean:
+        inferred_cols["room_id"] = "INTEGER"
+        inferred_fks["room_id"] = "rooms"
 
     return {
         "columns": inferred_cols,
@@ -301,7 +359,6 @@ def auto_seed_relational_database(tables: list[str], storage: BaseStorage, rows_
     """
     seeded_counts = {}
 
-    # Thứ tự ưu tiên nạp: Bảng cha (users, categories, hotels) trước, bảng con (orders, items) sau
     def table_priority(t: str) -> int:
         schema = synthesize_table_schema(t)
         return len(schema.get("foreign_keys", {}))
@@ -331,3 +388,150 @@ def auto_seed_relational_database(tables: list[str], storage: BaseStorage, rows_
             seeded_counts[table] = created_count
 
     return seeded_counts
+
+
+# ==============================================================================
+# 4. ĐỘNG CƠ PHÂN TÍCH Ý TƯỞNG TIẾNG VIỆT TỰ NHIÊN (PROMPT-TO-SCHEMA ENGINE)
+# ==============================================================================
+DOMAIN_KEYWORD_PATTERNS = [
+    {
+        "keywords": ["phòng trọ", "nhà trọ", "căn hộ", "cho thuê", "homestay", "chủ trọ", "tiền trọ"],
+        "name": "Quản Lý Cho Thuê Phòng Trọ & Căn Hộ",
+        "category": "real_estate",
+        "description": "Hệ thống quản lý thông tin phòng trọ, người thuê, hợp đồng, chỉ số điện nước và hóa đơn hàng tháng.",
+        "tables": ["rooms", "tenants", "contracts", "utility_readings", "invoices"]
+    },
+    {
+        "keywords": ["cà phê", "trà sữa", "quán nước", "quán ăn", "nhà hàng", "f&b", "coffee", "bàn ăn", "menu"],
+        "name": "Quản Lý Quán Cà Phê, Trà Sữa & F&B",
+        "category": "retail",
+        "description": "Hệ thống quản lý thực đơn thức uống, sơ đồ bàn, nhân viên và các đơn gọi món trực tiếp.",
+        "tables": ["menu_items", "dining_tables", "orders", "staff", "invoices"]
+    },
+    {
+        "keywords": ["rạp chiếu phim", "vé xem phim", "cinema", "phim", "suất chiếu"],
+        "name": "Hệ Thống Bán Vé Rạp Chiếu Phim",
+        "category": "entertainment",
+        "description": "Quản lý danh sách phim chiếu, các suất chiếu rạp và đặt vé chỗ ngồi cho khách hàng.",
+        "tables": ["movies", "showtimes", "tickets", "users"]
+    },
+    {
+        "keywords": ["gym", "thể hình", "fitness", "yoga", "pt", "huấn luyện viên", "phòng tập"],
+        "name": "Quản Lý Phòng Tập Gym & Fitness",
+        "category": "service",
+        "description": "Quản lý hội viên, các gói tập, huấn luyện viên cá nhân và lịch sử check-in.",
+        "tables": ["users", "departments", "projects", "tasks"]
+    },
+    {
+        "keywords": ["bệnh viện", "phòng khám", "bác sĩ", "khám bệnh", "y tế", "thuốc", "bệnh nhân"],
+        "name": "Quản Lý Phòng Khám & Y Tế",
+        "category": "healthcare",
+        "description": "Quản lý thông tin bệnh nhân, bác sĩ chuyên khoa và lịch hẹn khám bệnh.",
+        "tables": ["doctors", "patients", "appointments", "users"]
+    },
+    {
+        "keywords": ["khách sạn", "resort", "đặt phòng", "hotel", "du lịch", "tour"],
+        "name": "Hệ Thống Đặt Phòng Khách Sạn & Resort",
+        "category": "hospitality",
+        "description": "Quản lý danh mục phòng, khách sạn, trạng thái đặt phòng và hóa đơn thanh toán.",
+        "tables": ["hotels", "rooms", "bookings", "users"]
+    },
+    {
+        "keywords": ["khóa học", "học trực tuyến", "e-learning", "lms", "bài giảng", "giáo viên", "học viên"],
+        "name": "Nền Tảng Đào Tạo & Khóa Học Trực Tuyến",
+        "category": "education",
+        "description": "Quản lý các khóa học, bài học video, giảng viên và tiến độ học tập của học viên.",
+        "tables": ["courses", "lessons", "enrollments", "users"]
+    },
+    {
+        "keywords": ["gọi xe", "giao hàng", "tài xế", "chuyến đi", "ship", "shipper", "xe ôm"],
+        "name": "Nền Tảng Đặt Xe & Giao Hàng Siêu Tốc",
+        "category": "logistics",
+        "description": "Hệ thống kết nối tài xế, hành khách, chuyến đi thực tế và tính cước vận chuyển.",
+        "tables": ["drivers", "rides", "users", "transactions"]
+    },
+    {
+        "keywords": ["bán hàng", "thương mại", "shop", "cửa hàng", "sản phẩm", "giỏ hàng", "mua sắm"],
+        "name": "Cửa Hàng Thương Mại Điện Tử Toàn Diện",
+        "category": "ecommerce",
+        "description": "Quản lý sản phẩm, danh mục, giỏ hàng, đơn hàng và khách hàng.",
+        "tables": ["categories", "products", "orders", "order_items", "users"]
+    },
+    {
+        "keywords": ["mạng xã hội", "chat", "tin nhắn", "bài viết", "cộng đồng", "diễn đàn"],
+        "name": "Mạng Xã Hội & Cộng Đồng Trực Tuyến",
+        "category": "social",
+        "description": "Chia sẻ bài viết, tương tác bình luận, thả tim và nhắn tin riêng.",
+        "tables": ["posts", "comments", "likes", "messages", "users"]
+    }
+]
+
+
+def parse_prompt_to_system_blueprint(prompt_text: str) -> dict[str, Any]:
+    """
+    Phân tích một câu mô tả tiếng Việt bất kỳ của người dùng và tự động tổng hợp:
+    1. Tên hệ thống & Mô tả nghiệp vụ.
+    2. Danh sách các bảng dữ liệu (Tables) phù hợp nhất.
+    3. Cấu trúc cột, kiểu dữ liệu và liên kết khóa ngoại.
+    """
+    p_lower = prompt_text.lower().strip()
+
+    # 1. Kiểm tra xem người dùng có chỉ định danh sách bảng cụ thể không (VD: "bảng: users, tasks, projects")
+    explicit_tables = []
+    if "bảng" in p_lower or "tables" in p_lower:
+        part = p_lower.split("bảng")[-1] if "bảng" in p_lower else p_lower.split("tables")[-1]
+        raw_names = part.replace(":", " ").replace(";", ",").replace(".", ",").split(",")
+        for n in raw_names:
+            clean = "".join(ch for ch in n.strip() if ch.isalnum() or ch == "_")
+            if clean and len(clean) > 1 and clean not in explicit_tables:
+                explicit_tables.append(clean)
+
+    # 2. Quét khớp các mẫu nghiệp vụ phổ biến theo từ khóa
+    best_match = None
+    max_score = 0
+    for pattern in DOMAIN_KEYWORD_PATTERNS:
+        score = sum(1 for kw in pattern["keywords"] if kw in p_lower)
+        if score > max_score:
+            max_score = score
+            best_match = pattern
+
+    # 3. Tổng hợp kết quả
+    if best_match and max_score >= 1 and not explicit_tables:
+        tables = best_match["tables"]
+        system_name = best_match["name"]
+        description = best_match["description"]
+        category = best_match["category"]
+    elif explicit_tables:
+        tables = explicit_tables
+        system_name = f"Hệ Thống Tùy Chỉnh: {prompt_text[:35]}..."
+        description = f"Hệ thống phát sinh tự động từ mô tả: '{prompt_text}'"
+        category = "custom"
+    else:
+        # Fallback thông minh: Tự động trích xuất các danh từ trong câu
+        words = [w.strip() for w in p_lower.replace(",", " ").replace(".", " ").split() if len(w) > 2]
+        inferred = []
+        for w in words:
+            clean_w = "".join(ch for ch in w if ch.isalnum() or ch == "_")
+            if clean_w in TABLE_KNOWLEDGE_BASE and clean_w not in inferred:
+                inferred.append(clean_w)
+        if not inferred:
+            inferred = ["users", "products", "orders"]
+
+        tables = inferred
+        system_name = f"Hệ Thống Thông Minh: {prompt_text[:35]}..."
+        description = f"Hệ thống được BFA phân tích tự động từ: '{prompt_text}'"
+        category = "custom"
+
+    key = "sys_" + "".join(ch for ch in system_name.lower() if ch.isalnum() or ch == "_")[:20] + f"_{int(time.time())}"
+
+    return {
+        "id": int(time.time()) % 100000,
+        "key": key,
+        "name": system_name,
+        "category": category,
+        "description": description,
+        "tables": tables,
+        "seed_data": {},
+        "is_custom": True,
+        "created_at": time.strftime("%Y-%m-%d %H:%M:%S")
+    }
