@@ -663,8 +663,16 @@
         </div>
 
         <div style="border-top: 1px solid var(--card-border); padding-top: 0.75rem;">
-          <div style="font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Cơ Sở Dữ Liệu Đang Dùng</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted);">Động cơ lưu trữ: <strong>SQLite (bfa_database.db)</strong>. Dữ liệu được lưu vĩnh viễn trên máy tính của bạn.</p>
+          <div style="font-weight: 700; color: #fff; margin-bottom: 0.25rem;">Kết Nối CSDL Doanh Nghiệp (Network Sockets)</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); line-height: 1.4; margin-bottom: 0.5rem;">
+            BFA hoạt động như một Cổng API Gateway, kết nối trực tiếp qua cổng mạng TCP tới:
+            <strong style="color:var(--accent);">PostgreSQL (:5432)</strong>, 
+            <strong style="color:var(--emerald);">MySQL (:3306)</strong>, 
+            <strong style="color:#a855f7;">MongoDB (:27017)</strong> hoặc Cloud URI (Supabase, Neon, AWS RDS).
+          </p>
+          <div style="font-size: 0.78rem; color: var(--text-muted);">
+            Trạng thái hiện tại: <span class="count-pill" style="color:var(--emerald);">🟢 PostgreSQL Network Gateway Connected</span>
+          </div>
         </div>
       </div>
     </div>

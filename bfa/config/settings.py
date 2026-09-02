@@ -18,13 +18,13 @@ DEFAULT_CONFIG = {
     "blueprint": "b2c_store",
     "domain": "ecommerce",
     "database": {
-        "driver": "json",  # "json", "memory", "postgres", "mysql", "mongodb"
-        "data_file": "data/bfa_store.json",
+        "driver": "postgres",  # "postgres", "mysql", "mongodb", "memory"
         "host": "localhost",
         "port": 5432,
-        "database_name": "bfa_store",
+        "database_name": "bfa_database",
         "username": "postgres",
         "password": "",
+        "connection_uri": "",
     },
     "tables": [
         "users",

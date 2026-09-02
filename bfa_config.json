@@ -6,13 +6,13 @@
   "blueprint": "idle",
   "domain": "ecommerce",
   "database": {
-    "driver": "json",
-    "data_file": "data/bfa_store.json",
+    "driver": "postgres",
     "host": "localhost",
     "port": 5432,
-    "database_name": "bfa_store",
+    "database_name": "bfa_database",
     "username": "postgres",
-    "password": ""
+    "password": "",
+    "connection_uri": ""
   },
   "tables": [
     "users",
